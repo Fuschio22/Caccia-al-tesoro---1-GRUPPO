@@ -178,7 +178,7 @@
         // 🔤 Normalizza testo per confronto
         function normalize(s){return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w\s]/gi,"")}
         
-        // ✅ VERIFICA RISPOSTA - CORRETTA: errore visibile FINCHÉ non si indovina
+        // ✅ VERIFICA RISPOSTA
         function check(btn,correct,nextId){
             const q=btn.closest('.question'),inp=q.querySelector('.answer-input'),fb=q.querySelector('.feedback'),nxt=document.getElementById(nextId);
             const user=normalize(inp.value);
@@ -195,14 +195,12 @@
                 btn.disabled=true;btn.textContent="Corretto ✓";
                 if(nxt){nxt.style.display="block";nxt.classList.add("show");setTimeout(()=>{if(nxt?.scrollIntoView)nxt.scrollIntoView({behavior:'smooth',block:'nearest'})},100)}
             }else{
-                // ❌ ERRORE: messaggio SEMPRE visibile, input evidenziato, pulsante attivo per riprovare
                 fb.innerHTML="❌ Risposta non corretta. Riprova!";
                 fb.className="feedback incorrect";
-                fb.style.display="block"; // FORZA VISIBILITÀ - NESSUN TIMEOUT
+                fb.style.display="block";
                 if(nxt)nxt.style.display="none";
-                inp.classList.add('error');inp.focus();
-                inp.oninput=function(){this.classList.remove('error')}; // rimuovi evidenziazione quando si scrive
-                // Pulsante RESTA ATTIVO per riprovare infinite volte
+                inp.classList.add('error');
+                inp.focus();
             }
         }
         
@@ -216,6 +214,18 @@
         
         // 📱 PWA Service Worker
         if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA attiva')).catch(e=>console.log('SW:',e))})}
+        
+        //  ✨ CORREZIONE RICHIESTA: nasconde il messaggio di errore appena si inizia a digitare di nuovo
+        document.querySelectorAll('.answer-input').forEach(inp => {
+            inp.addEventListener('input', function() {
+                const question = this.closest('.question');
+                const feedback = question.querySelector('.feedback');
+                if (feedback && feedback.style.display === 'block') {
+                    feedback.style.display = 'none';
+                    this.classList.remove('error');
+                }
+            });
+        });
     </script>
 </body>
 </html>
