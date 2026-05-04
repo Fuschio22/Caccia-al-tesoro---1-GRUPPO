@@ -175,19 +175,36 @@
         function toggleAudio(){playing?(audio.pause(),audioBtn.innerHTML='▶',playing=false):(audio.play().catch(()=>{}),audioBtn.innerHTML='❚',playing=true)}
         document.addEventListener('click',function init(){if(!playing){audio.play().catch(()=>{});audioBtn.innerHTML='❚';playing=true}document.removeEventListener('click',init)},{once:true});
         
-        // 🔤 Normalizza testo
+        // 🔤 Normalizza testo (toglie accenti e caratteri speciali)
         function normalize(s){return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w\s]/gi,"")}
         
-        // ✅ VERIFICA RISPOSTA
+        // ✅ VERIFICA RISPOSTA CORRETTA E RIGOROSA
         function check(btn,correct,nextId){
             const q=btn.closest('.question'), inp=q.querySelector('.answer-input'), fb=q.querySelector('.feedback'), nxt=document.getElementById(nextId);
-            const user=normalize(inp.value);
-            const answers=Array.isArray(correct)?correct:[correct];
-            const normalizedAnswers=answers.map(a=>normalize(a));
-            let isCorrect=false;
-            for(const ans of normalizedAnswers){
-                if(user===ans || user===ans.replace('la ','').replace('di ','').trim() || user===ans.replace('san ','').trim() || user.includes(ans) || ans.includes(user)){isCorrect=true;break}
+            
+            // Prepara l'input dell'utente
+            const userRaw = inp.value;
+            const user = normalize(userRaw);
+            
+            const answers = Array.isArray(correct) ? correct : [correct];
+            let isCorrect = false;
+            
+            for (let ans of answers) {
+                const ansNorm = normalize(ans);
+                
+                // 1. Controllo Esatto (identico)
+                if (user === ansNorm) { isCorrect = true; break; }
+                
+                // 2. Controllo "Intelligente" (toglie San/Santa/La/Il dal confronto)
+                // Permette "Marco" se la risposta è "San Marco", o "luce divina" se è "la luce divina"
+                const removeTitles = str => str.replace(/^(san|santa|il|la|le|lo|gli|i|di|del)\s+/g, '').trim();
+                
+                if (removeTitles(user) === removeTitles(ansNorm)) { 
+                    isCorrect = true; 
+                    break; 
+                }
             }
+            
             if(isCorrect){
                 fb.innerHTML="✅ <strong>RISPOSTA CORRETTA!</strong><br>Ottimo lavoro. Ora clicca su <strong>Avanti</strong> per procedere.";
                 fb.className="feedback correct";
@@ -196,6 +213,7 @@
                 btn.disabled=true; btn.textContent="Corretto ✓";
                 if(nxt){nxt.style.display="block"; nxt.classList.add("show"); setTimeout(()=>{if(nxt?.scrollIntoView)nxt.scrollIntoView({behavior:'smooth',block:'nearest'})},100)}
             }else{
+                // ❌ ERRORE: messaggio visibile, input rosso, puoi riprovare
                 fb.innerHTML="❌ Risposta non corretta. Riprova!";
                 fb.className="feedback incorrect";
                 fb.style.display="block";
@@ -224,9 +242,9 @@
                 const feedback = question.querySelector('.feedback');
                 if (feedback) {
                     feedback.style.display = 'none';
-                    feedback.className = 'feedback'; // Rimuove classi correct/incorrect
+                    feedback.className = 'feedback'; 
                 }
-                this.classList.remove('error'); // Rimuove bordo rosso
+                this.classList.remove('error');
             });
         });
     </script>
