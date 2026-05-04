@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caccia al Tesoro - Arte e Vangelo</title>
-    
-    <!-- 📱 PWA & iOS Optimizations -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1a2a6c">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,164 +11,41 @@
     <meta name="apple-mobile-web-app-title" content="ArteVangelo">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" href="icon-192.png" type="image/png">
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #4a6491);
-            color: #333;
-            min-height: 100vh;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 850px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 18px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            position: relative;
-            margin-top: 20px;
-            margin-bottom: 70px;
-        }
-        
-        .container::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background: linear-gradient(90deg, #ff8a00, #da1b60, #6a11cb, #2575fc);
-            border-radius: 18px 18px 0 0;
-        }
-        
-        .slide { display: none; animation: fadeIn 0.4s ease; }
-        .slide.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .lim-display {
-            background: #111;
-            border: 6px solid #333;
-            border-radius: 10px;
-            height: 180px;
-            margin: 15px 0;
-            display: flex; justify-content: center; align-items: center;
-            color: #aaa; font-size: 1.1rem; text-align: center; padding: 10px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
-        }
-        
-        .passage {
-            background: #f8f9fa; border-left: 5px solid #4a6491;
-            padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0;
-            line-height: 1.5; font-size: 0.95rem;
-            max-height: 220px; overflow-y: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            display: none;
-        }
-        .passage.visible { display: block; animation: slideDown 0.4s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .question {
-            background: #e8f4fd; padding: 15px; border-radius: 12px;
-            margin: 15px 0; border: 2px solid #2196f3;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .question-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; color: #0d47a1; }
-        
-        .answer-input {
-            width: 100%; padding: 12px; margin: 8px 0;
-            border: 2px solid #bbdefb; border-radius: 8px;
-            font-size: 1rem; background: white; transition: border 0.2s;
-        }
-        .answer-input:focus { outline: none; border-color: #1976d2; }
-        .answer-input:disabled { background: #e0e0e0; cursor: not-allowed; }
-        
-        .hint-btn {
-            background: linear-gradient(45deg, #ff9800, #f4511e);
-            color: white; border: none; padding: 8px 14px;
-            border-radius: 20px; font-weight: 600; cursor: pointer;
-            margin: 5px 0; font-size: 0.9rem;
-        }
-        .hint-text {
-            background: #fff3e0; border-left: 4px solid #ff9800;
-            padding: 10px; margin: 5px 0; border-radius: 0 6px 6px 0;
-            display: none; font-style: italic; font-size: 0.9rem;
-        }
-        
-        .check-btn {
-            background: linear-gradient(45deg, #4caf50, #2e7d32);
-            color: white; border: none; padding: 11px 20px;
-            border-radius: 25px; font-size: 0.95rem; font-weight: 600;
-            cursor: pointer; margin: 12px auto 5px; display: block;
-            width: 100%; max-width: 220px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .check-btn:disabled { background: #81c784; cursor: default; }
-        
-        .feedback {
-            padding: 12px; border-radius: 8px; margin: 10px 0;
-            text-align: center; font-weight: 600; display: none;
-            line-height: 1.4;
-        }
-        .feedback.correct {
-            background: #e8f5e9; color: #1b5e20; border: 2px solid #4caf50;
-            display: block; animation: pulseSuccess 0.6s;
-        }
-        .feedback.incorrect {
-            background: #ffebee; color: #c62828; border: 2px solid #ef5350;
-            display: block; animation: shake 0.4s;
-        }
-        @keyframes pulseSuccess { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-        
-        .next-btn {
-            background: linear-gradient(45deg, #2196f3, #0d47a1);
-            color: white; border: none; padding: 12px 20px;
-            border-radius: 25px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; margin: 12px auto 5px;
-            width: 100%; max-width: 220px; box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-            display: none; transition: all 0.3s;
-        }
-        .next-btn.show { display: block; animation: fadeIn 0.4s; }
-        .next-btn:hover { transform: translateY(-2px); }
-        
-        .slide-title {
-            text-align: center; color: #1a237e; margin: 10px 0 12px;
-            font-size: 1.4rem; position: relative; padding-bottom: 8px;
-        }
-        .slide-title::after {
-            content: ""; position: absolute; bottom: 0; left: 50%;
-            transform: translateX(-50%); width: 60px; height: 3px; background: #e91e63;
-        }
-        .section-title {
-            text-align: center; color: #2e7d32; margin: 15px 0 8px;
-            font-size: 1.15rem; font-weight: 700; display: none;
-        }
-        .section-title.visible { display: block; animation: fadeIn 0.4s; }
-        
-        .audio-control {
-            position: fixed; bottom: 15px; right: 15px;
-            background: white; border-radius: 25px; padding: 6px 12px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-            display: flex; align-items: center; gap: 8px; z-index: 1000;
-            border: 2px solid #4a6491;
-        }
-        .audio-btn {
-            background: #4a6491; color: white; border: none;
-            width: 32px; height: 32px; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .progress-bar { height: 5px; background: #e0e0e0; border-radius: 3px; margin: 10px 0 15px; overflow: hidden; }
-        .progress { height: 100%; background: #4caf50; width: 33%; transition: width 0.4s; }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+        body{background:linear-gradient(135deg,#1a2a6c,#2c3e50,#4a6491);color:#333;min-height:100vh;padding:15px;display:flex;justify-content:center;align-items:flex-start}
+        .container{width:100%;max-width:850px;background:rgba(255,255,255,0.98);border-radius:18px;box-shadow:0 8px 25px rgba(0,0,0,0.3);padding:20px;position:relative;margin:20px auto 70px}
+        .container::before{content:"";position:absolute;top:0;left:0;width:100%;height:6px;background:linear-gradient(90deg,#ff8a00,#da1b60,#6a11cb,#2575fc);border-radius:18px 18px 0 0}
+        .slide{display:none;animation:fadeIn .4s ease}.slide.active{display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        .lim-display{background:#111;border:6px solid #333;border-radius:10px;height:180px;margin:15px 0;display:flex;justify-content:center;align-items:center;color:#aaa;font-size:1.1rem;text-align:center;padding:10px;box-shadow:inset 0 0 15px rgba(0,0,0,0.6)}
+        .passage{background:#f8f9fa;border-left:5px solid #4a6491;padding:15px;margin:15px 0;border-radius:0 8px 8px 0;line-height:1.5;font-size:.95rem;max-height:220px;overflow-y:auto;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:none}
+        .passage.visible{display:block;animation:slideDown .4s ease}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .question{background:#e8f4fd;padding:15px;border-radius:12px;margin:15px 0;border:2px solid #2196f3;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
+        .question-title{font-weight:700;font-size:1.05rem;margin-bottom:8px;color:#0d47a1}
+        .answer-input{width:100%;padding:12px;margin:8px 0;border:2px solid #bbdefb;border-radius:8px;font-size:1rem;background:white;transition:all .2s}
+        .answer-input:focus{outline:none;border-color:#1976d2}.answer-input:disabled{background:#e0e0e0;cursor:not-allowed}
+        .answer-input.error{border-color:#ef5350!important;box-shadow:0 0 0 3px rgba(239,83,80,.2)!important}
+        .hint-btn{background:linear-gradient(45deg,#ff9800,#f4511e);color:white;border:none;padding:8px 14px;border-radius:20px;font-weight:600;cursor:pointer;margin:5px 0;font-size:.9rem}
+        .hint-text{background:#fff3e0;border-left:4px solid #ff9800;padding:10px;margin:5px 0;border-radius:0 6px 6px 0;display:none;font-style:italic;font-size:.9rem}
+        .check-btn{background:linear-gradient(45deg,#4caf50,#2e7d32);color:white;border:none;padding:11px 20px;border-radius:25px;font-size:.95rem;font-weight:600;cursor:pointer;margin:12px auto 5px;display:block;width:100%;max-width:220px;box-shadow:0 2px 5px rgba(0,0,0,.2)}
+        .check-btn:disabled{background:#81c784;cursor:default}
+        .feedback{padding:12px;border-radius:8px;margin:10px 0;text-align:center;font-weight:600;display:none;line-height:1.4}
+        .feedback.correct{background:#e8f5e9;color:#1b5e20;border:2px solid #4caf50;display:block;animation:pulseSuccess .6s}
+        .feedback.incorrect{background:#ffebee;color:#c62828;border:2px solid #ef5350;display:block;animation:shake .4s}
+        @keyframes pulseSuccess{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+        .next-btn{background:linear-gradient(45deg,#2196f3,#0d47a1);color:white;border:none;padding:12px 20px;border-radius:25px;font-size:1rem;font-weight:700;cursor:pointer;margin:12px auto 5px;width:100%;max-width:220px;box-shadow:0 3px 8px rgba(0,0,0,.25);display:none;transition:all .3s}
+        .next-btn.show{display:block;animation:fadeIn .4s}
+        .slide-title{text-align:center;color:#1a237e;margin:10px 0 12px;font-size:1.4rem;position:relative;padding-bottom:8px}
+        .slide-title::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60px;height:3px;background:#e91e63}
+        .section-title{text-align:center;color:#2e7d32;margin:15px 0 8px;font-size:1.15rem;font-weight:700;display:none}
+        .section-title.visible{display:block;animation:fadeIn .4s}
+        .audio-control{position:fixed;bottom:15px;right:15px;background:white;border-radius:25px;padding:6px 12px;box-shadow:0 3px 10px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;z-index:1000;border:2px solid #4a6491}
+        .audio-btn{background:#4a6491;color:white;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .progress-bar{height:5px;background:#e0e0e0;border-radius:3px;margin:10px 0 15px;overflow:hidden}
+        .progress{height:100%;background:#4caf50;width:33%;transition:width .4s}
     </style>
 </head>
 <body>
@@ -181,43 +56,36 @@
         <div class="slide active" id="slide1">
             <h1 class="slide-title">Prima Tappa</h1>
             <div class="lim-display">Osserva l'immagine sulla Lim</div>
-            
             <div class="question" id="q1a1">
                 <div class="question-title">In quale città siamo?</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'venezia', 'next-q1a2')">Verifica</button>
+                <button class="check-btn" onclick="check(this,'venezia','next-q1a2')">Verifica</button>
                 <button class="next-btn" id="next-q1a2" onclick="goTo('q1a2')">Avanti</button>
             </div>
-            
-            <div class="question" id="q1a2" style="display:none;">
+            <div class="question" id="q1a2" style="display:none">
                 <div class="question-title">A chi è dedicata la basilica?</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'san marco', 'next-q1a3')">Verifica</button>
+                <button class="check-btn" onclick="check(this,'san marco','next-q1a3')">Verifica</button>
                 <button class="next-btn" id="next-q1a3" onclick="goTo('q1a3')">Avanti</button>
             </div>
-            
-            <div class="question" id="q1a3" style="display:none;">
+            <div class="question" id="q1a3" style="display:none">
                 <div class="question-title">Il personaggio rappresentato è tradizionalmente identificato come un...</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'evangelista', 'btn-show-p1')">Verifica</button>
-                <button class="next-btn" id="btn-show-p1" onclick="showPassageAndQ('p1', 't1', 'q1a4')">Leggi il brano e continua</button>
+                <button class="check-btn" onclick="check(this,'evangelista','btn-show-p1')">Verifica</button>
+                <button class="next-btn" id="btn-show-p1" onclick="showPassageAndQ('p1','t1','q1a4')">Leggi il brano e continua</button>
             </div>
-            
             <h2 class="section-title" id="t1">Leggi il brano per trovare l'indizio</h2>
-            <div class="passage" id="p1">
-                Inizio del vangelo di Gesù Cristo, Figlio di Dio. [2] Come è scritto nel profeta Isaia: Ecco, io mando il mio messaggero davanti a te, egli ti preparerà la strada. [3] Voce di uno che grida nel deserto: preparate la strada del Signore, raddrizzate i suoi sentieri, [4] si presentò Giovanni a battezzare nel deserto, predicando un battesimo di conversione per il perdono dei peccati. [5] Accorreva a lui tutta la regione della Giudea e tutti gli abitanti di Gerusalemme. E si facevano battezzare da lui nel fiume Giordano, confessando i loro peccati. [6] Giovanni era vestito di peli di cammello, con una cintura di pelle attorno ai fianchi, si cibava di locuste e miele selvatico [7] e predicava: "Dopo di me viene uno che è più forte di me e al quale io non son degno di chinarmi per sciogliere i legacci dei suoi sandali. [8] Io vi ho battezzati con acqua, ma egli vi battezzerà con lo Spirito Santo". [9] In quei giorni Gesù venne da Nazaret di Galilea e fu battezzato nel Giordano da Giovanni. [10] E, uscendo dall'acqua, vide aprirsi i cieli e lo Spirito discendere su di lui come una colomba. [11] E si sentì una voce dal cielo: "Tu sei il Figlio mio prediletto, in te mi sono compiaciuto". [12] Subito dopo lo Spirito lo sospinse nel deserto [13] e vi rimase quaranta giorni, tentato da satana; stava con le fiere (leone) e gli angeli lo servivano. [14] Dopo che Giovanni fu arrestato, Gesù si recò nella Galilea predicando il vangelo di Dio e diceva: [15] "Il tempo è compiuto e il regno di Dio è vicino; convertitevi e credete al vangelo". [16] Passando lungo il mare della Galilea, vide Simone e Andrea, fratello di Simone, mentre gettavano le reti in mare; erano infatti pescatori. [17] Gesù disse loro: "Seguitemi, vi farò diventare pescatori di uomini". [18] E subito, lasciate le reti, lo seguirono. [19] Andando un poco oltre, vide sulla barca anche Giacomo di Zebedèo e Giovanni suo fratello mentre riassettavano le reti. [20] Li chiamò. Ed essi, lasciato il loro padre Zebedèo sulla barca con i garzoni, lo seguirono. (Tratto dal Vangelo secondo Marco 1, 1-20).
-            </div>
-            
-            <div class="question" id="q1a4" style="display:none;">
+            <div class="passage" id="p1">Inizio del vangelo di Gesù Cristo, Figlio di Dio. [2] Come è scritto nel profeta Isaia: Ecco, io mando il mio messaggero davanti a te, egli ti preparerà la strada. [3] Voce di uno che grida nel deserto: preparate la strada del Signore, raddrizzate i suoi sentieri, [4] si presentò Giovanni a battezzare nel deserto, predicando un battesimo di conversione per il perdono dei peccati. [5] Accorreva a lui tutta la regione della Giudea e tutti gli abitanti di Gerusalemme. E si facevano battezzare da lui nel fiume Giordano, confessando i loro peccati. [6] Giovanni era vestito di peli di cammello, con una cintura di pelle attorno ai fianchi, si cibava di locuste e miele selvatico [7] e predicava: "Dopo di me viene uno che è più forte di me e al quale io non son degno di chinarmi per sciogliere i legacci dei suoi sandali. [8] Io vi ho battezzati con acqua, ma egli vi battezzerà con lo Spirito Santo". [9] In quei giorni Gesù venne da Nazaret di Galilea e fu battezzato nel Giordano da Giovanni. [10] E, uscendo dall'acqua, vide aprirsi i cieli e lo Spirito discendere su di lui come una colomba. [11] E si sentì una voce dal cielo: "Tu sei il Figlio mio prediletto, in te mi sono compiaciuto". [12] Subito dopo lo Spirito lo sospinse nel deserto [13] e vi rimase quaranta giorni, tentato da satana; stava con le fiere (leone) e gli angeli lo servivano. [14] Dopo che Giovanni fu arrestato, Gesù si recò nella Galilea predicando il vangelo di Dio e diceva: [15] "Il tempo è compiuto e il regno di Dio è vicino; convertitevi e credete al vangelo". [16] Passando lungo il mare della Galilea, vide Simone e Andrea, fratello di Simone, mentre gettavano le reti in mare; erano infatti pescatori. [17] Gesù disse loro: "Seguitemi, vi farò diventare pescatori di uomini". [18] E subito, lasciate le reti, lo seguirono. [19] Andando un poco oltre, vide sulla barca anche Giacomo di Zebedèo e Giovanni suo fratello mentre riassettavano le reti. [20] Li chiamò. Ed essi, lasciato il loro padre Zebedèo sulla barca con i garzoni, lo seguirono. (Tratto dal Vangelo secondo Marco 1, 1-20).</div>
+            <div class="question" id="q1a4" style="display:none">
                 <div class="question-title">Qual è il simbolo animale associato a San Marco?</div>
                 <button class="hint-btn" onclick="showHint(this)">Mostra indizio</button>
                 <div class="hint-text">Leggi il brano: tra le fiere troverai la tua risposta…</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'leone', 'next-s2')">Verifica</button>
+                <button class="check-btn" onclick="check(this,'leone','next-s2')">Verifica</button>
                 <button class="next-btn" id="next-s2" onclick="goToSlide(2)">Avanti alla prossima tappa</button>
             </div>
         </div>
@@ -226,29 +94,24 @@
         <div class="slide" id="slide2">
             <h1 class="slide-title">Seconda Tappa</h1>
             <div class="lim-display">Osserva l'immagine sulla Lim</div>
-            
             <h2 class="section-title visible">Leggi attentamente il racconto</h2>
-            <div class="passage visible" id="p2">
-                Filippo incontrò Natanaèle e gli disse: "Abbiamo trovato colui del quale hanno scritto Mosè nella Legge e i Profeti, Gesù, figlio di Giuseppe di Nazaret". Natanaèle esclamò: "Da Nazaret può mai venire qualcosa di buono?". Filippo gli rispose: "Vieni e vedi". Gesù intanto, visto Natanaèle che gli veniva incontro, disse di lui: "Ecco davvero un Israelita in cui non c'è falsità". Natanaèle gli domandò: "Come mi conosci?". Gli rispose Gesù: "Prima che Filippo ti chiamasse, io ti ho visto quando eri sotto il fico". Gli replicò Natanaèle: "Rabbì, tu sei il Figlio di Dio, tu sei il re d'Israele!". Gli rispose Gesù: "Perché ti ho detto che ti avevo visto sotto il fico, credi? Vedrai cose maggiori di queste!". Poi gli disse: "In verità, in verità vi dico: vedrete il cielo aperto e gli angeli di Dio salire e scendere sul Figlio dell'uomo". L'apostolato di Natanaèle dopo la Pentecoste fu attivissimo, perché la tradizione posteriore gli attribuisce lunghi viaggi missionari, pur non potendo stabilire nulla di preciso. Natanaèle toccò la Licaonia, che è parte della Cappadocia, provincia dell'Asia, ove predicò e convertì molta gente alla fede. In seguito, portando con sé il vangelo di Matteo, passò nell'India "superiore" e in varie regioni del Medio Oriente, come affermano Origene, Eusebio, S. Girolamo. Entrò poi nell'Armenia ove fu coronato dal martirio ad Albanopoli. Intorno alla sua morte vi sono opinioni diverse tra gli antichi scrittori che narrano le sue gesta e il susseguente martirio. Ippolito scrive che fu crocifisso con il capo all'ingiù, e sotto il capo furono bruciate erbe fetide per soffocarlo. Sant'Agostino, Sant'Isidoro di Siviglia ed il martirologio di Beda affermano che san Natanaèle morì scorticato vivo. L'Armenia fu il campo più fecondo della sua missione. Qui per provare la verità annunciate, liberò numerosi ossessi, guarì malati, diede la vista ai ciechi reclamando la distruzione degli idoli e la conversione alla dottrina di Gesù. Secondo i fatti narrati da Abdia Babilonico, avendo Natanaèle portato alla fede cristiana il re Polimio e la sua sposa l'invidia dei sacerdoti locali fu tale che aizzando Astiage, fratello del re, fu decretato per lui (Bartolomeo) il raccapricciante martirio di essere scorticato vivo dalla testa ai piedi. Due sole membra rimasero illese, gli occhi e la lingua e furono i due organi di cui si servì l'Apostolo per proclamare ancora la fede in Gesù. Il feroce supplizio terminò con la decapitazione per ordine dello stesso Astiage.
-            </div>
-            
+            <div class="passage visible" id="p2">Filippo incontrò Natanaèle e gli disse: "Abbiamo trovato colui del quale hanno scritto Mosè nella Legge e i Profeti, Gesù, figlio di Giuseppe di Nazaret". Natanaèle esclamò: "Da Nazaret può mai venire qualcosa di buono?". Filippo gli rispose: "Vieni e vedi". Gesù intanto, visto Natanaèle che gli veniva incontro, disse di lui: "Ecco davvero un Israelita in cui non c'è falsità". Natanaèle gli domandò: "Come mi conosci?". Gli rispose Gesù: "Prima che Filippo ti chiamasse, io ti ho visto quando eri sotto il fico". Gli replicò Natanaèle: "Rabbì, tu sei il Figlio di Dio, tu sei il re d'Israele!". Gli rispose Gesù: "Perché ti ho detto che ti avevo visto sotto il fico, credi? Vedrai cose maggiori di queste!". Poi gli disse: "In verità, in verità vi dico: vedrete il cielo aperto e gli angeli di Dio salire e scendere sul Figlio dell'uomo". L'apostolato di Natanaèle dopo la Pentecoste fu attivissimo, perché la tradizione posteriore gli attribuisce lunghi viaggi missionari, pur non potendo stabilire nulla di preciso. Natanaèle toccò la Licaonia, che è parte della Cappadocia, provincia dell'Asia, ove predicò e convertì molta gente alla fede. In seguito, portando con sé il vangelo di Matteo, passò nell'India "superiore" e in varie regioni del Medio Oriente, come affermano Origene, Eusebio, S. Girolamo. Entrò poi nell'Armenia ove fu coronato dal martirio ad Albanopoli. Intorno alla sua morte vi sono opinioni diverse tra gli antichi scrittori che narrano le sue gesta e il susseguente martirio. Ippolito scrive che fu crocifisso con il capo all'ingiù, e sotto il capo furono bruciate erbe fetide per soffocarlo. Sant'Agostino, Sant'Isidoro di Siviglia ed il martirologio di Beda affermano che san Natanaèle morì scorticato vivo. L'Armenia fu il campo più fecondo della sua missione. Qui per provare la verità annunciate, liberò numerosi ossessi, guarì malati, diede la vista ai ciechi reclamando la distruzione degli idoli e la conversione alla dottrina di Gesù. Secondo i fatti narrati da Abdia Babilonico, avendo Natanaèle portato alla fede cristiana il re Polimio e la sua sposa l'invidia dei sacerdoti locali fu tale che aizzando Astiage, fratello del re, fu decretato per lui (Bartolomeo) il raccapricciante martirio di essere scorticato vivo dalla testa ai piedi. Due sole membra rimasero illese, gli occhi e la lingua e furono i due organi di cui si servì l'Apostolo per proclamare ancora la fede in Gesù. Il feroce supplizio terminò con la decapitazione per ordine dello stesso Astiage.</div>
             <div class="question" id="q2a1">
                 <div class="question-title">Prima domanda: Osserva attentamente l'immagine sulla Lim e leggi il racconto. Chi è l'uomo con una pelle sulla mano sinistra?</div>
                 <button class="hint-btn" onclick="showHint(this)">Mostra indizio</button>
                 <div class="hint-text">Attento al cambio di nome e a come morì.</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'san bartolomeo', 'next-q2a2')">Verifica</button>
+                <button class="check-btn" onclick="check(this,'san bartolomeo','next-q2a2')">Verifica</button>
                 <button class="next-btn" id="next-q2a2" onclick="goTo('q2a2')">Avanti</button>
             </div>
-            
-            <div class="question" id="q2a2" style="display:none;">
+            <div class="question" id="q2a2" style="display:none">
                 <div class="question-title">Seconda domanda: Probabilmente, chi è il volto sulla pelle?</div>
                 <button class="hint-btn" onclick="showHint(this)">Mostra indizio</button>
                 <div class="hint-text">Il pittore ti fornisce la risposta</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'michelangelo', 'next-s3')">Verifica</button>
+                <button class="check-btn" onclick="check(this,'michelangelo','next-s3')">Verifica</button>
                 <button class="next-btn" id="next-s3" onclick="goToSlide(3)">Avanti alla prossima tappa</button>
             </div>
         </div>
@@ -257,37 +120,31 @@
         <div class="slide" id="slide3">
             <h1 class="slide-title">Terza Tappa</h1>
             <div class="lim-display">Osserva l'immagine sulla Lim</div>
-            
             <div class="question" id="q3a1">
                 <div class="question-title">Prima domanda: Sulla destra è presente una finestra, ma la luce sembra arrivare da un altro luogo. Secondo te, cosa rappresenta quella luce?</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, ['luce divina', 'luce di dio'], 'next-q3a2')">Verifica</button>
+                <button class="check-btn" onclick="check(this,['luce divina','luce di dio'],'next-q3a2')">Verifica</button>
                 <button class="next-btn" id="next-q3a2" onclick="goTo('q3a2')">Avanti</button>
             </div>
-            
-            <div class="question" id="q3a2" style="display:none;">
+            <div class="question" id="q3a2" style="display:none">
                 <div class="question-title">Seconda domanda: Chi è il personaggio sulla destra che sta indicando qualcosa?</div>
                 <button class="hint-btn" onclick="showHint(this)">Mostra indizio</button>
                 <div class="hint-text">Guarda sopra la sua testa: sembra avere un'aureola...</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'gesù', 'btn-show-p3')">Verifica</button>
-                <button class="next-btn" id="btn-show-p3" onclick="showPassageAndQ('p3', 't3', 'q3a3')">Leggi il brano e continua</button>
+                <button class="check-btn" onclick="check(this,'gesù','btn-show-p3')">Verifica</button>
+                <button class="next-btn" id="btn-show-p3" onclick="showPassageAndQ('p3','t3','q3a3')">Leggi il brano e continua</button>
             </div>
-            
             <h2 class="section-title" id="t3">Leggi il brano per trovare l'indizio</h2>
-            <div class="passage" id="p3">
-                [1] Salito su una barca, Gesù passò all'altra riva e giunse nella sua città. [2] Ed ecco, gli portarono un paralitico steso su un letto. Gesù, vista la loro fede, disse al paralitico: "Coraggio, figliolo, ti sono rimessi i tuoi peccati". [3] Allora alcuni scribi cominciarono a pensare: "Costui bestemmia". [4] Ma Gesù, conoscendo i loro pensieri, disse: "Perché mai pensate cose malvagie nel vostro cuore? [5] Che cosa dunque è più facile, dire: Ti sono rimessi i peccati, o dire: Alzati e cammina? [6] Ora, perché sappiate che il Figlio dell'uomo ha il potere in terra di rimettere i peccati: alzati, disse allora al paralitico, prendi il tuo letto e và a casa tua". [7] Ed egli si alzò e andò a casa sua. [8] A quella vista, la folla fu presa da timore e rese gloria a Dio che aveva dato un tale potere agli uomini. [9] Andando via di là, Gesù vide un uomo, seduto al banco delle imposte, chiamato Matteo, e gli disse: "Seguimi". Ed egli si alzò e lo seguì. [10] Mentre Gesù sedeva a mensa in casa, sopraggiunsero molti pubblicani e peccatori e si misero a tavola con lui e con i discepoli. [11] Vedendo ciò, i farisei dicevano ai suoi discepoli: "Perché il vostro maestro mangia insieme ai pubblicani e ai peccatori?". [12] Gesù li udì e disse: "Non sono i sani che hanno bisogno del medico, ma i malati. [13] Andate dunque e imparate che cosa significhi: Misericordia io voglio e non sacrificio. Infatti non sono venuto a chiamare i giusti, ma i peccatori". [14] Allora gli si accostarono i discepoli di Giovanni e gli dissero: "Perché, mentre noi e i farisei digiuniamo, i tuoi discepoli non digiunano?". [15] E Gesù disse loro: "Possono forse gli invitati a nozze essere in lutto mentre lo sposo è con loro? Verranno però i giorni quando lo sposo sarà loro tolto e allora digiuneranno. [16] Nessuno mette un pezzo di stoffa grezza su un vestito vecchio, perché il rattoppo squarcia il vestito e si fa uno strappo peggiore. [17] Né si mette vino nuovo in otri vecchi, altrimenti si rompono gli otri e il vino si versa e gli otri van perduti. Ma si versa vino nuovo in otri nuovi, e così l'uno e gli altri si conservano". [18] Mentre diceva loro queste cose, giunse uno dei capi che gli si prostrò innanzi e gli disse: "Mia figlia è morta proprio ora; ma vieni, imponi la tua mano sopra di lei ed essa vivrà". [19] Alzatosi, Gesù lo seguiva con i suoi discepoli. [20] Ed ecco una donna, che soffriva d'emorragia da dodici anni, gli si accostò alle spalle e toccò il lembo del suo mantello. [21] Pensava infatti: "Se riuscirò anche solo a toccare il suo mantello, sarò guarita". [22] Gesù, voltatosi, la vide e disse: "Coraggio, figliola, la tua fede ti ha guarita". E in quell'istante la donna guarì. [23] Arrivato poi Gesù nella casa del capo e veduti i flautisti e la gente in agitazione, disse: [24] "Ritiratevi, perché la fanciulla non è morta, ma dorme". Quelli si misero a deriderlo. [25] Ma dopo che fu cacciata via la gente egli entrò, le prese la mano e la fanciulla si alzò. [26] E se ne sparse la fama in tutta quella regione. [27] Mentre Gesù si allontanava di là, due ciechi lo seguivano urlando: "Figlio di Davide, abbi pietà di noi". [28] Entrato in casa, i ciechi gli si accostarono, e Gesù disse loro: "Credete voi che io possa fare questo?". Gli risposero: "Sì, o Signore!". [29] Allora toccò loro gli occhi e disse: "Sia fatto a voi secondo la vostra fede". [30] E si aprirono loro gli occhi. Quindi Gesù li ammonì dicendo: "Badate che nessuno lo sappia!". [31] Ma essi, appena usciti, ne sparsero la fama in tutta quella regione. [32] Usciti costoro, gli presentarono un muto indemoniato. [33] Scacciato il demonio, quel muto cominciò a parlare e la folla presa da stupore diceva: "Non si è mai vista una cosa simile in Israele!". [34] Ma i farisei dicevano: "Egli scaccia i demòni per opera del principe dei demòni". [35] Gesù andava attorno per tutte le città e i villaggi, insegnando nelle loro sinagoghe, predicando il vangelo del regno e curando ogni malattia e infermità. [36] Vedendo le folle ne sentì compassione, perché erano stanche e sfinite, come pecore senza pastore. [37] Allora disse ai suoi discepoli: "La messe è molta, ma gli operai sono pochi! [38] Pregate dunque il padrone della messe che mandi operai nella sua messe!"
-            </div>
-            
-            <div class="question" id="q3a3" style="display:none;">
+            <div class="passage" id="p3">[1] Salito su una barca, Gesù passò all'altra riva e giunse nella sua città. [2] Ed ecco, gli portarono un paralitico steso su un letto. Gesù, vista la loro fede, disse al paralitico: "Coraggio, figliolo, ti sono rimessi i tuoi peccati". [3] Allora alcuni scribi cominciarono a pensare: "Costui bestemmia". [4] Ma Gesù, conoscendo i loro pensieri, disse: "Perché mai pensate cose malvagie nel vostro cuore? [5] Che cosa dunque è più facile, dire: Ti sono rimessi i peccati, o dire: Alzati e cammina? [6] Ora, perché sappiate che il Figlio dell'uomo ha il potere in terra di rimettere i peccati: alzati, disse allora al paralitico, prendi il tuo letto e và a casa tua". [7] Ed egli si alzò e andò a casa sua. [8] A quella vista, la folla fu presa da timore e rese gloria a Dio che aveva dato un tale potere agli uomini. [9] Andando via di là, Gesù vide un uomo, seduto al banco delle imposte, chiamato Matteo, e gli disse: "Seguimi". Ed egli si alzò e lo seguì. [10] Mentre Gesù sedeva a mensa in casa, sopraggiunsero molti pubblicani e peccatori e si misero a tavola con lui e con i discepoli. [11] Vedendo ciò, i farisei dicevano ai suoi discepoli: "Perché il vostro maestro mangia insieme ai pubblicani e ai peccatori?". [12] Gesù li udì e disse: "Non sono i sani che hanno bisogno del medico, ma i malati. [13] Andate dunque e imparate che cosa significhi: Misericordia io voglio e non sacrificio. Infatti non sono venuto a chiamare i giusti, ma i peccatori". [14] Allora gli si accostarono i discepoli di Giovanni e gli dissero: "Perché, mentre noi e i farisei digiuniamo, i tuoi discepoli non digiunano?". [15] E Gesù disse loro: "Possono forse gli invitati a nozze essere in lutto mentre lo sposo è con loro? Verranno però i giorni quando lo sposo sarà loro tolto e allora digiuneranno. [16] Nessuno mette un pezzo di stoffa grezza su un vestito vecchio, perché il rattoppo squarcia il vestito e si fa uno strappo peggiore. [17] Né si mette vino nuovo in otri vecchi, altrimenti si rompono gli otri e il vino si versa e gli otri van perduti. Ma si versa vino nuovo in otri nuovi, e così l'uno e gli altri si conservano". [18] Mentre diceva loro queste cose, giunse uno dei capi che gli si prostrò innanzi e gli disse: "Mia figlia è morta proprio ora; ma vieni, imponi la tua mano sopra di lei ed essa vivrà". [19] Alzatosi, Gesù lo seguiva con i suoi discepoli. [20] Ed ecco una donna, che soffriva d'emorragia da dodici anni, gli si accostò alle spalle e toccò il lembo del suo mantello. [21] Pensava infatti: "Se riuscirò anche solo a toccare il suo mantello, sarò guarita". [22] Gesù, voltatosi, la vide e disse: "Coraggio, figliola, la tua fede ti ha guarita". E in quell'istante la donna guarì. [23] Arrivato poi Gesù nella casa del capo e veduti i flautisti e la gente in agitazione, disse: [24] "Ritiratevi, perché la fanciulla non è morta, ma dorme". Quelli si misero a deriderlo. [25] Ma dopo che fu cacciata via la gente egli entrò, le prese la mano e la fanciulla si alzò. [26] E se ne sparse la fama in tutta quella regione. [27] Mentre Gesù si allontanava di là, due ciechi lo seguivano urlando: "Figlio di Davide, abbi pietà di noi". [28] Entrato in casa, i ciechi gli si accostarono, e Gesù disse loro: "Credete voi che io possa fare questo?". Gli risposero: "Sì, o Signore!". [29] Allora toccò loro gli occhi e disse: "Sia fatto a voi secondo la vostra fede". [30] E si aprirono loro gli occhi. Quindi Gesù li ammonì dicendo: "Badate che nessuno lo sappia!". [31] Ma essi, appena usciti, ne sparsero la fama in tutta quella regione. [32] Usciti costoro, gli presentarono un muto indemoniato. [33] Scacciato il demonio, quel muto cominciò a parlare e la folla presa da stupore diceva: "Non si è mai vista una cosa simile in Israele!". [34] Ma i farisei dicevano: "Egli scaccia i demòni per opera del principe dei demòni". [35] Gesù andava attorno per tutte le città e i villaggi, insegnando nelle loro sinagoghe, predicando il vangelo del regno e curando ogni malattia e infermità. [36] Vedendo le folle ne sentì compassione, perché erano stanche e sfinite, come pecore senza pastore. [37] Allora disse ai suoi discepoli: "La messe è molta, ma gli operai sono pochi! [38] Pregate dunque il padrone della messe che mandi operai nella sua messe!"</div>
+            <div class="question" id="q3a3" style="display:none">
                 <div class="question-title">Terza domanda: Tra i personaggi seduti al banco, uno sembra rispondere alla chiamata: di chi si tratta?</div>
                 <button class="hint-btn" onclick="showHint(this)">Mostra indizio</button>
                 <div class="hint-text">Leggi il brano: il personaggio che cerchi, Gesù lo trovò seduto ad un banco…</div>
                 <input type="text" class="answer-input" placeholder="Scrivi la risposta...">
                 <div class="feedback"></div>
-                <button class="check-btn" onclick="check(this, 'matteo', 'next-end')">Verifica</button>
+                <button class="check-btn" onclick="check(this,'matteo','next-end')">Verifica</button>
                 <button class="next-btn" id="next-end" onclick="goToSlide('final')">Complimenti! Hai completato la caccia</button>
             </div>
         </div>
@@ -295,11 +152,11 @@
         <!-- FINAL -->
         <div class="slide" id="final">
             <h1 class="slide-title">🎉 Complimenti! 🎉</h1>
-            <p style="text-align:center; font-size:1.15rem; margin:20px 0; color:#1a237e;">Hai completato la caccia al tesoro!<br>Hai dimostrato grande attenzione e conoscenza.</p>
-            <div style="background:#e8f5e9; border:3px solid #4caf50; border-radius:15px; padding:20px; margin:15px 0; text-align:center;">
-                <p style="font-size:1.1rem; font-weight:700; color:#2e7d32;">Bravissimi! Siete dei veri detective dell'arte e del Vangelo!</p>
+            <p style="text-align:center;font-size:1.15rem;margin:20px 0;color:#1a237e">Hai completato la caccia al tesoro!<br>Hai dimostrato grande attenzione e conoscenza.</p>
+            <div style="background:#e8f5e9;border:3px solid #4caf50;border-radius:15px;padding:20px;margin:15px 0;text-align:center">
+                <p style="font-size:1.1rem;font-weight:700;color:#2e7d32">Bravissimi! Siete dei veri detective dell'arte e del Vangelo!</p>
             </div>
-            <button class="check-btn" onclick="location.reload()" style="background:linear-gradient(45deg, #9c27b0, #6a1b9a);">Ricomincia</button>
+            <button class="check-btn" onclick="location.reload()" style="background:linear-gradient(45deg,#9c27b0,#6a1b9a)">Ricomincia</button>
         </div>
     </div>
     
@@ -313,136 +170,52 @@
     </audio>
     
     <script>
-        const audio = document.getElementById('bgMusic');
-        const audioBtn = document.getElementById('audioToggle');
-        let playing = false;
+        // 🎵 Audio
+        const audio=document.getElementById('bgMusic'),audioBtn=document.getElementById('audioToggle');let playing=false;
+        function toggleAudio(){playing?(audio.pause(),audioBtn.innerHTML='▶',playing=false):(audio.play().catch(()=>{}),audioBtn.innerHTML='❚❚',playing=true)}
+        document.addEventListener('click',function init(){if(!playing){audio.play().catch(()=>{});audioBtn.innerHTML='❚❚';playing=true}document.removeEventListener('click',init)},{once:true});
         
-        function toggleAudio() {
-            playing ? (audio.pause(), audioBtn.innerHTML = '▶', playing = false) : 
-                       (audio.play().catch(()=>{}), audioBtn.innerHTML = '❚❚', playing = true);
-        }
-        document.addEventListener('click', function init() {
-            if(!playing) { audio.play().catch(()=>{}); audioBtn.innerHTML = '❚❚'; playing = true; }
-            document.removeEventListener('click', init);
-        }, {once:true});
+        // 🔤 Normalizza testo per confronto
+        function normalize(s){return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w\s]/gi,"")}
         
-        function normalize(s) {
-            return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, "");
-        }
-        
-        // ✅ FUNZIONE CHECK MODIFICATA: gestisce array di risposte e previene blocchi
-        function check(btn, correct, nextId) {
-            const q = btn.closest('.question');
-            const inp = q.querySelector('.answer-input');
-            const fb = q.querySelector('.feedback');
-            const nxt = document.getElementById(nextId);
-            
-            const user = normalize(inp.value);
-            
-            // ✅ Supporta sia stringa singola che array di risposte
-            const answers = Array.isArray(correct) ? correct : [correct];
-            const normalizedAnswers = answers.map(ans => normalize(ans));
-            
-            // ✅ Verifica corrispondenza con qualsiasi risposta valida
-            let isCorrect = false;
-            for (const ans of normalizedAnswers) {
-                if (user === ans || 
-                    user === ans.replace('la ', '').replace('di ', '').trim() || 
-                    user === ans.replace('san ', '').trim() || 
-                    user.includes(ans) || 
-                    ans.includes(user)) {
-                    isCorrect = true;
-                    break;
-                }
+        // ✅ VERIFICA RISPOSTA - CORRETTA: errore visibile FINCHÉ non si indovina
+        function check(btn,correct,nextId){
+            const q=btn.closest('.question'),inp=q.querySelector('.answer-input'),fb=q.querySelector('.feedback'),nxt=document.getElementById(nextId);
+            const user=normalize(inp.value);
+            const answers=Array.isArray(correct)?correct:[correct];
+            const normalizedAnswers=answers.map(a=>normalize(a));
+            let isCorrect=false;
+            for(const ans of normalizedAnswers){
+                if(user===ans||user===ans.replace('la ','').replace('di ','').trim()||user===ans.replace('san ','').trim()||user.includes(ans)||ans.includes(user)){isCorrect=true;break}
             }
-            
-            if(isCorrect) {
-                fb.innerHTML = "✅ <strong>RISPOSTA CORRETTA!</strong><br>Ottimo lavoro. Ora clicca su <strong>Avanti</strong> per procedere.";
-                fb.className = "feedback correct";
-                inp.disabled = true;
-                btn.disabled = true;
-                btn.textContent = "Corretto ✓";
-                // ✅ Sicurezza: controlla che nxt esista prima di manipolarlo
-                if(nxt) {
-                    nxt.style.display = "block";
-                    nxt.classList.add("show");
-                    setTimeout(() => {
-                        if(nxt && nxt.scrollIntoView) {
-                            nxt.scrollIntoView({behavior:'smooth', block:'nearest'});
-                        }
-                    }, 100);
-                }
-            } else {
-                fb.innerHTML = "❌ Risposta non corretta. Riprova!";
-                fb.className = "feedback incorrect";
-                if(nxt) nxt.style.display = "none";
-                setTimeout(() => { 
-                    if(fb && fb.classList.contains('incorrect')) {
-                        fb.style.display = 'none'; 
-                    }
-                }, 3000);
+            if(isCorrect){
+                fb.innerHTML="✅ <strong>RISPOSTA CORRETTA!</strong><br>Ottimo lavoro. Ora clicca su <strong>Avanti</strong> per procedere.";
+                fb.className="feedback correct";
+                inp.disabled=true;inp.classList.remove('error');
+                btn.disabled=true;btn.textContent="Corretto ✓";
+                if(nxt){nxt.style.display="block";nxt.classList.add("show");setTimeout(()=>{if(nxt?.scrollIntoView)nxt.scrollIntoView({behavior:'smooth',block:'nearest'})},100)}
+            }else{
+                // ❌ ERRORE: messaggio SEMPRE visibile, input evidenziato, pulsante attivo per riprovare
+                fb.innerHTML="❌ Risposta non corretta. Riprova!";
+                fb.className="feedback incorrect";
+                fb.style.display="block"; // FORZA VISIBILITÀ - NESSUN TIMEOUT
+                if(nxt)nxt.style.display="none";
+                inp.classList.add('error');inp.focus();
+                inp.oninput=function(){this.classList.remove('error')}; // rimuovi evidenziazione quando si scrive
+                // Pulsante RESTA ATTIVO per riprovare infinite volte
             }
         }
         
-        function showHint(btn) {
-            const hint = btn.nextElementSibling;
-            if(hint) {
-                hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
-            }
-        }
+        function showHint(btn){const hint=btn.nextElementSibling;if(hint)hint.style.display=hint.style.display==='block'?'none':'block'}
+        function goTo(id){const el=document.getElementById(id);if(el){el.style.display='block';setTimeout(()=>{if(el?.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'})},150)}}
+        function showPassageAndQ(pId,tId,qId){const p=document.getElementById(pId),t=document.getElementById(tId);if(p)p.classList.add('visible');if(t)t.classList.add('visible');goTo(qId)}
+        function goToSlide(n){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));if(n===2){document.getElementById('slide2').classList.add('active');document.getElementById('progress').style.width='66%'}else if(n===3){document.getElementById('slide3').classList.add('active');document.getElementById('progress').style.width='100%'}else{document.getElementById('final').classList.add('active')}window.scrollTo({top:0,behavior:'smooth'})}
         
-        function goTo(id) {
-            const el = document.getElementById(id);
-            if(el) {
-                el.style.display = 'block';
-                setTimeout(() => {
-                    if(el && el.scrollIntoView) {
-                        el.scrollIntoView({behavior:'smooth', block:'center'});
-                    }
-                }, 150);
-            }
-        }
+        // ⌨️ Invio con Enter
+        document.querySelectorAll('.answer-input').forEach(i=>{i.addEventListener('keypress',e=>{if(e.key==='Enter'){const b=i.closest('.question')?.querySelector('.check-btn');if(b&&!b.disabled)b.click()}})});
         
-        function showPassageAndQ(pId, tId, qId) {
-            const p = document.getElementById(pId);
-            const t = document.getElementById(tId);
-            if(p) p.classList.add('visible');
-            if(t) t.classList.add('visible');
-            goTo(qId);
-        }
-        
-        function goToSlide(n) {
-            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-            if(n === 2) {
-                document.getElementById('slide2').classList.add('active');
-                document.getElementById('progress').style.width = '66%';
-            } else if(n === 3) {
-                document.getElementById('slide3').classList.add('active');
-                document.getElementById('progress').style.width = '100%';
-            } else {
-                document.getElementById('final').classList.add('active');
-            }
-            window.scrollTo({top:0, behavior:'smooth'});
-        }
-        
-        // Invio tastiera
-        document.querySelectorAll('.answer-input').forEach(i => {
-            i.addEventListener('keypress', e => {
-                if(e.key === 'Enter') {
-                    const b = i.closest('.question')?.querySelector('.check-btn');
-                    if(b && !b.disabled) b.click();
-                }
-            });
-        });
-
-        // 📱 Registrazione Service Worker (PWA)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(() => console.log('✅ PWA attiva'))
-                    .catch(err => console.log('SW:', err));
-            });
-        }
+        // 📱 PWA Service Worker
+        if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA attiva')).catch(e=>console.log('SW:',e))})}
     </script>
 </body>
 </html>
