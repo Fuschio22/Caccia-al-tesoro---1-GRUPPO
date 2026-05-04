@@ -151,7 +151,7 @@
         
         <!-- FINAL -->
         <div class="slide" id="final">
-            <h1 class="slide-title">🎉 Complimenti! 🎉</h1>
+            <h1 class="slide-title">🎉 Complimenti! </h1>
             <p style="text-align:center;font-size:1.15rem;margin:20px 0;color:#1a237e">Hai completato la caccia al tesoro!<br>Hai dimostrato grande attenzione e conoscenza.</p>
             <div style="background:#e8f5e9;border:3px solid #4caf50;border-radius:15px;padding:20px;margin:15px 0;text-align:center">
                 <p style="font-size:1.1rem;font-weight:700;color:#2e7d32">Bravissimi! Siete dei veri detective dell'arte e del Vangelo!</p>
@@ -161,7 +161,7 @@
     </div>
     
     <div class="audio-control">
-        <span>🎵</span>
+        <span></span>
         <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">▶</button>
     </div>
     
@@ -172,33 +172,34 @@
     <script>
         // 🎵 Audio
         const audio=document.getElementById('bgMusic'),audioBtn=document.getElementById('audioToggle');let playing=false;
-        function toggleAudio(){playing?(audio.pause(),audioBtn.innerHTML='▶',playing=false):(audio.play().catch(()=>{}),audioBtn.innerHTML='❚❚',playing=true)}
-        document.addEventListener('click',function init(){if(!playing){audio.play().catch(()=>{});audioBtn.innerHTML='❚❚';playing=true}document.removeEventListener('click',init)},{once:true});
+        function toggleAudio(){playing?(audio.pause(),audioBtn.innerHTML='▶',playing=false):(audio.play().catch(()=>{}),audioBtn.innerHTML='❚',playing=true)}
+        document.addEventListener('click',function init(){if(!playing){audio.play().catch(()=>{});audioBtn.innerHTML='❚';playing=true}document.removeEventListener('click',init)},{once:true});
         
-        // 🔤 Normalizza testo per confronto
+        // 🔤 Normalizza testo
         function normalize(s){return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w\s]/gi,"")}
         
         // ✅ VERIFICA RISPOSTA
         function check(btn,correct,nextId){
-            const q=btn.closest('.question'),inp=q.querySelector('.answer-input'),fb=q.querySelector('.feedback'),nxt=document.getElementById(nextId);
+            const q=btn.closest('.question'), inp=q.querySelector('.answer-input'), fb=q.querySelector('.feedback'), nxt=document.getElementById(nextId);
             const user=normalize(inp.value);
             const answers=Array.isArray(correct)?correct:[correct];
             const normalizedAnswers=answers.map(a=>normalize(a));
             let isCorrect=false;
             for(const ans of normalizedAnswers){
-                if(user===ans||user===ans.replace('la ','').replace('di ','').trim()||user===ans.replace('san ','').trim()||user.includes(ans)||ans.includes(user)){isCorrect=true;break}
+                if(user===ans || user===ans.replace('la ','').replace('di ','').trim() || user===ans.replace('san ','').trim() || user.includes(ans) || ans.includes(user)){isCorrect=true;break}
             }
             if(isCorrect){
                 fb.innerHTML="✅ <strong>RISPOSTA CORRETTA!</strong><br>Ottimo lavoro. Ora clicca su <strong>Avanti</strong> per procedere.";
                 fb.className="feedback correct";
-                inp.disabled=true;inp.classList.remove('error');
-                btn.disabled=true;btn.textContent="Corretto ✓";
-                if(nxt){nxt.style.display="block";nxt.classList.add("show");setTimeout(()=>{if(nxt?.scrollIntoView)nxt.scrollIntoView({behavior:'smooth',block:'nearest'})},100)}
+                fb.style.display="block";
+                inp.disabled=true; inp.classList.remove('error');
+                btn.disabled=true; btn.textContent="Corretto ✓";
+                if(nxt){nxt.style.display="block"; nxt.classList.add("show"); setTimeout(()=>{if(nxt?.scrollIntoView)nxt.scrollIntoView({behavior:'smooth',block:'nearest'})},100)}
             }else{
                 fb.innerHTML="❌ Risposta non corretta. Riprova!";
                 fb.className="feedback incorrect";
                 fb.style.display="block";
-                if(nxt)nxt.style.display="none";
+                if(nxt) nxt.style.display="none";
                 inp.classList.add('error');
                 inp.focus();
             }
@@ -215,15 +216,17 @@
         // 📱 PWA Service Worker
         if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA attiva')).catch(e=>console.log('SW:',e))})}
         
-        //  ✨ CORREZIONE RICHIESTA: nasconde il messaggio di errore appena si inizia a digitare di nuovo
+        // ✨ CORREZIONE DEFINITIVA: Appena si modifica il campo, nasconde errore e resetta stile
         document.querySelectorAll('.answer-input').forEach(inp => {
             inp.addEventListener('input', function() {
                 const question = this.closest('.question');
+                if (!question) return;
                 const feedback = question.querySelector('.feedback');
-                if (feedback && feedback.style.display === 'block') {
+                if (feedback) {
                     feedback.style.display = 'none';
-                    this.classList.remove('error');
+                    feedback.className = 'feedback'; // Rimuove classi correct/incorrect
                 }
+                this.classList.remove('error'); // Rimuove bordo rosso
             });
         });
     </script>
