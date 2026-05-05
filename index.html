@@ -46,11 +46,19 @@
         .audio-btn{background:#4a6491;color:white;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
         .progress-bar{height:5px;background:#e0e0e0;border-radius:3px;margin:10px 0 15px;overflow:hidden}
         .progress{height:100%;background:#4caf50;width:33%;transition:width .4s}
+        .name-box{background:#e3f2fd;padding:12px;border-radius:10px;margin-bottom:15px;border:2px solid #2196f3}
+        .name-box label{font-weight:600;color:#0d47a1;font-size:.95rem}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        
+        <!-- CAMPO NOME ALUNNO -->
+        <div class="name-box">
+            <label>✏️ Il tuo nome o iniziale:</label>
+            <input type="text" id="studentName" class="answer-input" placeholder="Es. Marco R." style="margin-top:6px">
+        </div>
         
         <!-- SLIDE 1 -->
         <div class="slide active" id="slide1">
@@ -169,81 +177,82 @@
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
     
+    <!-- 🔥 FIREBASE (database gratis) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <script>
+        // 📌 SOSTITUISCI CON IL TUO URL DI FIREBASE (Passo 1)
+        const firebaseConfig = {
+            databaseURL: "https://caccia-al-tesoro-a9466-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         // 🎵 Audio
         const audio=document.getElementById('bgMusic'),audioBtn=document.getElementById('audioToggle');let playing=false;
         function toggleAudio(){playing?(audio.pause(),audioBtn.innerHTML='▶',playing=false):(audio.play().catch(()=>{}),audioBtn.innerHTML='❚',playing=true)}
         document.addEventListener('click',function init(){if(!playing){audio.play().catch(()=>{});audioBtn.innerHTML='❚';playing=true}document.removeEventListener('click',init)},{once:true});
         
-        // 🔤 Normalizza testo (toglie accenti e caratteri speciali)
         function normalize(s){return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w\s]/gi,"")}
         
-        // ✅ VERIFICA RISPOSTA CORRETTA E RIGOROSA
         function check(btn,correct,nextId){
             const q=btn.closest('.question'), inp=q.querySelector('.answer-input'), fb=q.querySelector('.feedback'), nxt=document.getElementById(nextId);
-            
-            // Prepara l'input dell'utente
             const userRaw = inp.value;
             const user = normalize(userRaw);
-            
             const answers = Array.isArray(correct) ? correct : [correct];
             let isCorrect = false;
-            
             for (let ans of answers) {
                 const ansNorm = normalize(ans);
-                
-                // 1. Controllo Esatto (identico)
-                if (user === ansNorm) { isCorrect = true; break; }
-                
-                // 2. Controllo "Intelligente" (toglie San/Santa/La/Il dal confronto)
-                // Permette "Marco" se la risposta è "San Marco", o "luce divina" se è "la luce divina"
-                const removeTitles = str => str.replace(/^(san|santa|il|la|le|lo|gli|i|di|del)\s+/g, '').trim();
-                
-                if (removeTitles(user) === removeTitles(ansNorm)) { 
-                    isCorrect = true; 
-                    break; 
+                if (user === ansNorm || ansNorm.replace(/^(san|santa|il|la|le|lo|gli|i|di|del)\s+/g,'').trim() === user.replace(/^(san|santa|il|la|le|lo|gli|i|di|del)\s+/g,'').trim()) { 
+                    isCorrect = true; break; 
                 }
             }
             
             if(isCorrect){
                 fb.innerHTML="✅ <strong>RISPOSTA CORRETTA!</strong><br>Ottimo lavoro. Ora clicca su <strong>Avanti</strong> per procedere.";
-                fb.className="feedback correct";
-                fb.style.display="block";
+                fb.className="feedback correct"; fb.style.display="block";
                 inp.disabled=true; inp.classList.remove('error');
                 btn.disabled=true; btn.textContent="Corretto ✓";
                 if(nxt){nxt.style.display="block"; nxt.classList.add("show"); setTimeout(()=>{if(nxt?.scrollIntoView)nxt.scrollIntoView({behavior:'smooth',block:'nearest'})},100)}
+                // 📤 INVIA AL DATABASE
+                sendToDB(q.querySelector('.question-title').textContent.trim(), userRaw || '(vuoto)', Array.isArray(correct)?correct.join(', '):correct, true);
             }else{
-                // ❌ ERRORE: messaggio visibile, input rosso, puoi riprovare
                 fb.innerHTML="❌ Risposta non corretta. Riprova!";
-                fb.className="feedback incorrect";
-                fb.style.display="block";
+                fb.className="feedback incorrect"; fb.style.display="block";
                 if(nxt) nxt.style.display="none";
-                inp.classList.add('error');
-                inp.focus();
+                inp.classList.add('error'); inp.focus();
+                sendToDB(q.querySelector('.question-title').textContent.trim(), userRaw || '(vuoto)', Array.isArray(correct)?correct.join(', '):correct, false);
             }
         }
         
+        function sendToDB(domanda, risposta, corretta, esito){
+            const nome = document.getElementById('studentName')?.value?.trim() || 'Anonimo';
+            db.ref('risposte').push({
+                studente: nome,
+                domanda,
+                risposta,
+                corretta,
+                esito,
+                ora: firebase.database.ServerValue.TIMESTAMP
+            }).catch(e => console.log('Offline o errore rete'));
+        }
+
         function showHint(btn){const hint=btn.nextElementSibling;if(hint)hint.style.display=hint.style.display==='block'?'none':'block'}
         function goTo(id){const el=document.getElementById(id);if(el){el.style.display='block';setTimeout(()=>{if(el?.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'})},150)}}
         function showPassageAndQ(pId,tId,qId){const p=document.getElementById(pId),t=document.getElementById(tId);if(p)p.classList.add('visible');if(t)t.classList.add('visible');goTo(qId)}
         function goToSlide(n){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));if(n===2){document.getElementById('slide2').classList.add('active');document.getElementById('progress').style.width='66%'}else if(n===3){document.getElementById('slide3').classList.add('active');document.getElementById('progress').style.width='100%'}else{document.getElementById('final').classList.add('active')}window.scrollTo({top:0,behavior:'smooth'})}
         
-        // ⌨️ Invio con Enter
         document.querySelectorAll('.answer-input').forEach(i=>{i.addEventListener('keypress',e=>{if(e.key==='Enter'){const b=i.closest('.question')?.querySelector('.check-btn');if(b&&!b.disabled)b.click()}})});
         
-        // 📱 PWA Service Worker
         if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(()=>console.log('✅ PWA attiva')).catch(e=>console.log('SW:',e))})}
         
-        // ✨ CORREZIONE DEFINITIVA: Appena si modifica il campo, nasconde errore e resetta stile
         document.querySelectorAll('.answer-input').forEach(inp => {
             inp.addEventListener('input', function() {
                 const question = this.closest('.question');
                 if (!question) return;
                 const feedback = question.querySelector('.feedback');
-                if (feedback) {
-                    feedback.style.display = 'none';
-                    feedback.className = 'feedback'; 
-                }
+                if (feedback) { feedback.style.display = 'none'; feedback.className = 'feedback'; }
                 this.classList.remove('error');
             });
         });

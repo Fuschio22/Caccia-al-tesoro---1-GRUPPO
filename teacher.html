@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Docente - Caccia al Tesoro</title>
+    <style>
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f7fa;padding:20px;color:#333}
+        h1{text-align:center;color:#1a2a6c;margin-bottom:20px}
+        .stats{display:flex;gap:15px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+        .card{background:white;padding:15px 25px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);text-align:center;min-width:120px}
+        .card h3{margin:0;font-size:1.8rem;color:#2e7d32}
+        .card p{margin:5px 0 0;color:#666;font-size:0.9rem}
+        table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+        th,td{padding:12px 15px;text-align:left;border-bottom:1px solid #eee}
+        th{background:#1a2a6c;color:white;font-weight:600}
+        tr:hover{background:#f8f9fa}
+        .ok{color:#2e7d32;font-weight:bold}
+        .no{color:#c62828;font-weight:bold}
+        .empty{text-align:center;padding:40px;color:#888}
+        .btn-clear{background:#ef5350;color:white;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;margin:10px 0}
+        .btn-clear:hover{background:#d32f2f}
+    </style>
+</head>
+<body>
+    <h1>📊 Dashboard Docente</h1>
+    <div class="stats">
+        <div class="card"><h3 id="total">0</h3><p>Risposte totali</p></div>
+        <div class="card"><h3 id="correct">0</h3><p>Corrette</p></div>
+        <div class="card"><h3 id="wrong">0</h3><p>Sbagliate</p></div>
+        <div class="card"><h3 id="students">0</h3><p>Studenti attivi</p></div>
+    </div>
+    <button class="btn-clear" onclick="clearAll()">🗑️ Svuota tutto</button>
+    <div id="table-container">
+        <table id="results">
+            <thead><tr><th>Studente</th><th>Domanda</th><th>Risposta data</th><th>Esito</th><th>Ora</th></tr></thead>
+            <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty-msg" class="empty">Nessuna risposta ancora. I dati appariranno qui in tempo reale...</div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script>
+        // 📌 STESSO URL DI PRIMA!
+        const firebaseConfig = {
+            databaseURL: "https://caccia-al-tesoro-a9466-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const tbody = document.getElementById('tbody');
+        const emptyMsg = document.getElementById('empty-msg');
+        let total=0, correct=0, wrong=0, students=new Set();
+
+        db.ref('risposte').on('child_added', snap => {
+            const d = snap.val();
+            if(!d) return;
+            emptyMsg.style.display='none';
+            total++; correct += d.esito?1:0; wrong += d.esito?0:1;
+            students.add(d.studente);
+            updateStats();
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${d.studente}</td>
+                <td>${d.domanda}</td>
+                <td>${d.risposta}</td>
+                <td class="${d.esito?'ok':'no'}">${d.esito?'✅ Corretta':'❌ Errata'}</td>
+                <td>${new Date(d.ora).toLocaleTimeString()}</td>
+            `;
+            tbody.insertBefore(row, tbody.firstChild);
+        });
+
+        function updateStats(){
+            document.getElementById('total').textContent=total;
+            document.getElementById('correct').textContent=correct;
+            document.getElementById('wrong').textContent=wrong;
+            document.getElementById('students').textContent=students.size;
+        }
+
+        function clearAll(){
+            if(confirm('Vuoi davvero cancellare tutte le risposte?')){
+                db.ref('risposte').remove();
+                tbody.innerHTML='';
+                total=0;correct=0;wrong=0;students.clear();
+                updateStats();
+                emptyMsg.style.display='block';
+            }
+        }
+    </script>
+</body>
+</html>
