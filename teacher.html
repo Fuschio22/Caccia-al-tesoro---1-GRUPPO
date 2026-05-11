@@ -3,52 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Docente - Caccia al Tesoro</title>
+    <title>Quiz - Risultati Partita</title>
     <style>
-        body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f7fa;padding:20px;color:#333}
-        h1{text-align:center;color:#1a2a6c;margin-bottom:20px}
-        .stats{display:flex;gap:15px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
-        .card{background:white;padding:15px 25px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);text-align:center;min-width:120px}
-        .card h3{margin:0;font-size:1.8rem;color:#2e7d32}
-        .card p{margin:5px 0 0;color:#666;font-size:0.9rem}
-        table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-        th,td{padding:12px 15px;text-align:left;border-bottom:1px solid #eee}
-        th{background:#1a2a6c;color:white;font-weight:600}
-        tr:hover{background:#f8f9fa}
-        .ok{color:#2e7d32;font-weight:bold}
-        .no{color:#c62828;font-weight:bold}
-        .completed{background:#e8f5e9;font-weight:bold;color:#1b5e20}
-        .empty{text-align:center;padding:40px;color:#888}
-        .btn-clear{background:#ef5350;color:white;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;margin:10px 0}
-        .btn-clear:hover{background:#d32f2f}
-        .filter{margin:10px 0;text-align:center}
-        .filter select{padding:8px 15px;border-radius:20px;border:1px solid #ddd}
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ========== CONTAINER PRINCIPALE ========== */
+        .quiz-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ========== BOTTONE SVUOTA TUTTO ========== */
+        .btn-svuota {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-svuota:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .btn-svuota .icon-trash {
+            font-size: 16px;
+        }
+
+        /* ========== TABELLA ========== */
+        .table-wrapper {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* ========== HEADER DELLA TABELLA ========== */
+        thead {
+            background-color: #1a2b5a;
+        }
+
+        thead th {
+            color: white;
+            padding: 18px 20px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        thead th:first-child {
+            padding-left: 30px;
+        }
+
+        thead th:last-child {
+            padding-right: 30px;
+        }
+
+        /* ========== RIGHE CORPO ========== */
+        tbody tr {
+            border-bottom: 1px solid #eef0f3;
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fb;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 15px;
+            line-height: 1.6;
+            vertical-align: top;
+        }
+
+        td:first-child {
+            padding-left: 30px;
+        }
+
+        td:last-child {
+            padding-right: 30px;
+        }
+
+        /* ========== COLONNA SQUADRA ========== */
+        .col-squadra {
+            font-weight: 700;
+            color: #333;
+            white-space: nowrap;
+            min-width: 120px;
+            font-size: 15px;
+        }
+
+        /* ========== COLONNA DOMANDA ========== */
+        .col-domanda {
+            color: #444;
+            min-width: 300px;
+            font-size: 15px;
+            font-style: normal;
+        }
+
+        /* ========== RIGA PARTITA COMPLETATA ========== */
+        .row-completata {
+            background-color: #e8f5e9 !important;
+        }
+
+        .row-completata .col-squadra {
+            color: #2e7d32;
+        }
+
+        .row-completata .col-domanda {
+            color: #2e7d32;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .row-completata .col-domanda .emoji-completa {
+            margin-right: 8px;
+        }
+
+        /* ========== COLONNA RISPOSTA ========== */
+        .col-risposta {
+            min-width: 250px;
+            font-size: 15px;
+            font-style: normal;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+            color: #444;
+            /* NESSUNA virgoletta, NESSUN corsivo */
+        }
+
+        .col-risposta.risposta-corretta {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        /* ========== COLONNA ESITO ========== */
+        .col-esito {
+            white-space: nowrap;
+            min-width: 180px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .esito-corretta {
+            color: #2e7d32;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .esito-corretta .check-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background-color: #4caf50;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .esito-errata {
+            color: #c62828;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .esito-errata .x-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background-color: #e53935;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .esito-completata {
+            color: #2e7d32;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 16px;
+        }
+
+        .esito-completata .party-icon {
+            font-size: 20px;
+        }
+
+        /* ========== COLONNA ORA ========== */
+        .col-ora {
+            white-space: nowrap;
+            text-align: right;
+            min-width: 120px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .col-ora .ora-data {
+            display: block;
+            font-size: 13px;
+            color: #999;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* ========== RIGA ERRATA ========== */
+        .row-errata {
+            background-color: #fef0f0;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            thead th,
+            td {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
+
+            td:first-child {
+                padding-left: 15px;
+            }
+
+            td:last-child {
+                padding-right: 15px;
+            }
+
+            .col-domanda {
+                min-width: 200px;
+            }
+
+            .col-risposta {
+                min-width: 150px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>📊 Dashboard Docente</h1>
-    <div class="stats">
-        <div class="card"><h3 id="total">0</h3><p>Eventi totali</p></div>
-        <div class="card"><h3 id="correct">0</h3><p>Risposte corrette</p></div>
-        <div class="card"><h3 id="wrong">0</h3><p>Risposte errate</p></div>
-        <div class="card"><h3 id="completed">0</h3><p>Partite completate 🎉</p></div>
-        <div class="card"><h3 id="students">0</h3><p>Squadre attive</p></div>
-    </div>
-    
-    <div class="filter">
-        <label>Filtra: </label>
-        <select id="filterType" onchange="applyFilter()">
-            <option value="all">Tutti gli eventi</option>
-            <option value="completato">Solo completamenti 🎉</option>
-            <option value="risposta_corretta">Solo risposte corrette ✅</option>
-            <option value="risposta_sbagliata">Solo errori ❌</option>
-        </select>
-    </div>
-    
-    <button class="btn-clear" onclick="clearAll()">🗑️ Svuota tutto</button>
-    
-    <div id="table-container">
-        <table id="results">
+
+<div class="quiz-container">
+
+    <!-- Bottone Svuota Tutto -->
+    <button class="btn-svuota" onclick="svuotaTutto()">
+        <span class="icon-trash">🗑</span>
+        Svuota tutto
+    </button>
+
+    <!-- Tabella Risultati -->
+    <div class="table-wrapper">
+        <table id="quizTable">
             <thead>
                 <tr>
                     <th>Squadra</th>
@@ -58,154 +307,151 @@
                     <th>Ora</th>
                 </tr>
             </thead>
-            <tbody id="tbody"></tbody>
+            <tbody id="quizBody">
+                <!-- Le righe vengono generate via JavaScript -->
+            </tbody>
         </table>
-        <div id="empty-msg" class="empty">Nessun evento ancora. I dati appariranno qui in tempo reale...<br><small>Assicurati che gli studenti stiano giocando!</small></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script>
-        // ✅ URL CORRETTO - STESSO DELL'APP STUDENTI!
-        const firebaseConfig = {
-            databaseURL: "https://caccia-al-tesoro-a9466-default-rtdb.europe-west1.firebasedatabase.app"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+</div>
 
-        const tbody = document.getElementById('tbody');
-        const emptyMsg = document.getElementById('empty-msg');
-        let events = [], students = new Set(), completedCount = 0, correctCount = 0, wrongCount = 0;
+<script>
+    // ========== DATI DEL QUIZ ==========
+    const quizData = [
+        {
+            squadra: "dakjkhcd",
+            domanda: " PARTITA COMPLETATA",
+            risposta: "Tutte le domande risposte correttamente",
+            esito: "completata",
+            completata: true
+        },
+        {
+            squadra: "dakjkhcd",
+            domanda: "Terza domanda: Tra i personaggi seduti al banco, uno sembra rispondere alla chiamata: di chi si tratta?",
+            risposta: "matteo",
+            esito: "corretta"
+        },
+        {
+            squadra: "dakjkhcd",
+            domanda: "Seconda domanda: Chi è il personaggio sulla destra che sta indicando qualcosa?",
+            risposta: "gesù",
+            esito: "corretta"
+        },
+        {
+            squadra: "dakjkhcd",
+            domanda: "Prima domanda: Sulla destra è presente una finestra, ma la luce sembra arrivare da un altro luogo. Secondo te, cosa rappresenta quella luce?",
+            risposta: "luce di dio",
+            esito: "corretta"
+        },
+        {
+            squadra: "dakjkhcd",
+            domanda: "Prima domanda: Sulla destra è presente una finestra, ma la luce sembra arrivare da un altro luogo. Secondo te, cosa rappresenta quella luce?",
+            risposta: "luce divi",
+            esito: "errata"
+        },
+        {
+            squadra: "dakjkhcd",
+            domanda: "Seconda domanda: Probabilmente, chi è il volto sulla pelle?",
+            risposta: "michelangelo",
+            esito: "corretta"
+        },
+        {
+            squadra: "dakjkhcd",
+            domanda: "Prima domanda: Osserva attentamente l'immagine sulla Lim e leggi il racconto. Chi è l'uomo con una pelle sulla mano sinistra?",
+            risposta: "bartolomeo",
+            esito: "corretta"
+        }
+    ];
 
-        // ✅ ASCOLTA IL PERCORSO GIUSTO: 'risposte'
-        db.ref('risposte').on('child_added', snap => {
-            const e = snap.val();
-            if(!e) return;
-            
-            emptyMsg.style.display = 'none';
-            students.add(e.studente);
-            
-            // Conta per statistiche
-            if(e.tipo === 'completato') {
-                completedCount++;
-            } else if(e.esito === true) {
-                correctCount++;
-            } else if(e.esito === false) {
-                wrongCount++;
+    // ========== ORA ATTUALE ==========
+    const now = new Date();
+    const oraFormatted = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const dataFormatted = now.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    // ========== RENDER TABELLA ==========
+    function renderTable() {
+        const tbody = document.getElementById('quizBody');
+        tbody.innerHTML = '';
+
+        quizData.forEach((item, index) => {
+            const tr = document.createElement('tr');
+
+            // Classe per riga completata o errata
+            if (item.completata) {
+                tr.classList.add('row-completata');
+            } else if (item.esito === 'errata') {
+                tr.classList.add('row-errata');
             }
-            
-            updateStats();
-            renderEvent(e);
-        });
 
-        function renderEvent(e){
-            events.unshift({...e, id: Date.now()});
-            const row = document.createElement('tr');
-            
-            // Evidenzia i completamenti
-            if(e.tipo === 'completato') {
-                row.classList.add('completed');
-            }
-            
-            // Icona e testo esito
-            let esitoIcon = '', esitoText = '';
-            if(e.tipo === 'completato') {
-                esitoIcon = '🎉';
-                esitoText = 'PARTITA COMPLETATA!';
-            } else if(e.esito === true) {
-                esitoIcon = '✅';
-                esitoText = 'Corretta';
-            } else if(e.esito === false) {
-                esitoIcon = '❌';
-                esitoText = 'Errata';
+            // --- Colonna Squadra ---
+            const tdSquadra = document.createElement('td');
+            tdSquadra.className = 'col-squadra';
+            tdSquadra.textContent = item.squadra;
+            tr.appendChild(tdSquadra);
+
+            // --- Colonna Domanda ---
+            const tdDomanda = document.createElement('td');
+            tdDomanda.className = 'col-domanda';
+
+            if (item.completata) {
+                tdDomanda.innerHTML = `<span class="emoji-completa">🎉</span>${item.domanda.replace('🎉 ', '')}`;
             } else {
-                esitoIcon = '📝';
-                esitoText = '-';
+                tdDomanda.textContent = item.domanda;
             }
-            
-            // Formatta data/ora
-            const date = new Date(e.ora);
-            const timeStr = date.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-            const dateStr = date.toLocaleDateString('it-IT');
-            
-            row.innerHTML = `
-                <td><strong>${e.studente || 'Anonimo'}</strong></td>
-                <td>${e.domanda || '-'}</td>
-                <td>${e.risposta ? `<em>"${e.risposta}"</em>` : '-'}</td>
-                <td class="${e.esito || e.tipo==='completato' ? 'ok' : 'no'}">${esitoIcon} ${esitoText}</td>
-                <td>${timeStr}<br><small style="color:#888">${dateStr}</small></td>
-            `;
-            
-            tbody.insertBefore(row, tbody.firstChild);
-        }
 
-        function applyFilter(){
-            const filter = document.getElementById('filterType').value;
-            tbody.innerHTML = '';
-            
-            const filtered = filter === 'all' ? events : 
-                           filter === 'completato' ? events.filter(e => e.tipo === 'completato') :
-                           filter === 'risposta_corretta' ? events.filter(e => e.esito === true && e.tipo !== 'completato') :
-                           events.filter(e => e.esito === false);
-            
-            if(filtered.length === 0){
-                emptyMsg.style.display = 'block';
-                emptyMsg.textContent = 'Nessun evento con questo filtro.';
-                return;
+            tr.appendChild(tdDomanda);
+
+            // --- Colonna Risposta ---
+            // NESSUNA virgoletta, NESSUN corsivo — stesso font della domanda
+            const tdRisposta = document.createElement('td');
+            tdRisposta.className = 'col-risposta';
+
+            if (item.completata) {
+                tdRisposta.textContent = `"${item.risposta}"`;
+                tdRisposta.style.fontStyle = 'normal';
+            } else {
+                // Risposta normale: NIENTE virgolette, NIENTE corsivo
+                tdRisposta.textContent = item.risposta;
+                tdRisposta.style.fontStyle = 'normal';
             }
-            emptyMsg.style.display = 'none';
-            
-            filtered.forEach(e => {
-                const row = document.createElement('tr');
-                if(e.tipo === 'completato') row.classList.add('completed');
-                
-                let esitoIcon = '', esitoText = '';
-                if(e.tipo === 'completato') {
-                    esitoIcon = '🎉';
-                    esitoText = 'PARTITA COMPLETATA!';
-                } else if(e.esito === true) {
-                    esitoIcon = '✅';
-                    esitoText = 'Corretta';
-                } else if(e.esito === false) {
-                    esitoIcon = '❌';
-                    esitoText = 'Errata';
-                }
-                
-                const date = new Date(e.ora);
-                const timeStr = date.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-                const dateStr = date.toLocaleDateString('it-IT');
-                
-                row.innerHTML = `
-                    <td><strong>${e.studente || 'Anonimo'}</strong></td>
-                    <td>${e.domanda || '-'}</td>
-                    <td>${e.risposta ? `<em>"${e.risposta}"</em>` : '-'}</td>
-                    <td class="${e.esito || e.tipo==='completato' ? 'ok' : 'no'}">${esitoIcon} ${esitoText}</td>
-                    <td>${timeStr}<br><small style="color:#888">${dateStr}</small></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
 
-        function updateStats(){
-            document.getElementById('total').textContent = events.length;
-            document.getElementById('correct').textContent = correctCount;
-            document.getElementById('wrong').textContent = wrongCount;
-            document.getElementById('completed').textContent = completedCount;
-            document.getElementById('students').textContent = students.size;
-        }
+            tr.appendChild(tdRisposta);
 
-        function clearAll(){
-            if(confirm('⚠️ Vuoi davvero cancellare TUTTI i dati?')){
-                db.ref('risposte').remove();
-                tbody.innerHTML = '';
-                events = [];
-                correctCount = 0; wrongCount = 0; completedCount = 0;
-                students.clear();
-                updateStats();
-                emptyMsg.style.display = 'block';
-                emptyMsg.textContent = 'Dati svuotati. In attesa di nuove partite...';
+            // --- Colonna Esito ---
+            const tdEsito = document.createElement('td');
+            tdEsito.className = 'col-esito';
+
+            if (item.completata) {
+                tdEsito.innerHTML = `<span class="esito-completata"><span class="party-icon">🎉</span>PARTITA COMPLETATA!</span>`;
+            } else if (item.esito === 'corretta') {
+                tdEsito.innerHTML = `<span class="esito-corretta"><span class="check-icon">✓</span>Corretta</span>`;
+            } else if (item.esito === 'errata') {
+                tdEsito.innerHTML = `<span class="esito-errata"><span class="x-icon">✕</span>Errata</span>`;
             }
+
+            tr.appendChild(tdEsito);
+
+            // --- Colonna Ora ---
+            const tdOra = document.createElement('td');
+            tdOra.className = 'col-ora';
+            tdOra.innerHTML = `${oraFormatted}<span class="ora-data">${dataFormatted}</span>`;
+            tr.appendChild(tdOra);
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ========== FUNZIONE SVUOTA TUTTO ==========
+    function svuotaTutto() {
+        if (confirm('Sei sicuro di voler svuotare tutti i risultati?')) {
+            quizData.length = 0;
+            renderTable();
         }
-    </script>
+    }
+
+    // ========== INIZIALIZZAZIONE ==========
+    renderTable();
+</script>
+
 </body>
 </html>
