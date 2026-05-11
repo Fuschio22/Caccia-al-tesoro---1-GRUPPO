@@ -238,10 +238,39 @@
             }).catch(e => console.log('Offline o errore rete'));
         }
 
+        // ✅ NUOVA FUNZIONE: invia evento "partita completata"
+        function sendCompletionEvent(){
+            const nome = document.getElementById('studentName')?.value?.trim() || 'Anonimo';
+            db.ref('risposte').push({
+                studente: nome,
+                domanda: '🎉 PARTITA COMPLETATA',
+                risposta: 'Tutte le domande risposte correttamente',
+                corretta: true,
+                esito: true,
+                tipo: 'completato',  // ← Questo campo permette alla dashboard di riconoscere il completamento
+                ora: firebase.database.ServerValue.TIMESTAMP
+            }).catch(e => console.log('Offline o errore rete'));
+        }
+
         function showHint(btn){const hint=btn.nextElementSibling;if(hint)hint.style.display=hint.style.display==='block'?'none':'block'}
         function goTo(id){const el=document.getElementById(id);if(el){el.style.display='block';setTimeout(()=>{if(el?.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'center'})},150)}}
         function showPassageAndQ(pId,tId,qId){const p=document.getElementById(pId),t=document.getElementById(tId);if(p)p.classList.add('visible');if(t)t.classList.add('visible');goTo(qId)}
-        function goToSlide(n){document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));if(n===2){document.getElementById('slide2').classList.add('active');document.getElementById('progress').style.width='66%'}else if(n===3){document.getElementById('slide3').classList.add('active');document.getElementById('progress').style.width='100%'}else{document.getElementById('final').classList.add('active')}window.scrollTo({top:0,behavior:'smooth'})}
+        
+        function goToSlide(n){
+            document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
+            if(n===2){
+                document.getElementById('slide2').classList.add('active');
+                document.getElementById('progress').style.width='66%';
+            }else if(n===3){
+                document.getElementById('slide3').classList.add('active');
+                document.getElementById('progress').style.width='100%';
+            }else if(n==='final'){
+                document.getElementById('final').classList.add('active');
+                // ✅ INVIA EVENTO COMPLETAMENTO QUANDO SI RAGGIUNGE LA SCHERMATA FINALE
+                sendCompletionEvent();
+            }
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
         
         document.querySelectorAll('.answer-input').forEach(i=>{i.addEventListener('keypress',e=>{if(e.key==='Enter'){const b=i.closest('.question')?.querySelector('.check-btn');if(b&&!b.disabled)b.click()}})});
         
