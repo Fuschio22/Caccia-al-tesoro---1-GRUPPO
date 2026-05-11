@@ -17,32 +17,56 @@
         tr:hover{background:#f8f9fa}
         .ok{color:#2e7d32;font-weight:bold}
         .no{color:#c62828;font-weight:bold}
+        .completed{background:#e8f5e9;font-weight:bold;color:#1b5e20}
         .empty{text-align:center;padding:40px;color:#888}
         .btn-clear{background:#ef5350;color:white;border:none;padding:8px 16px;border-radius:20px;cursor:pointer;margin:10px 0}
         .btn-clear:hover{background:#d32f2f}
+        .filter{margin:10px 0;text-align:center}
+        .filter select{padding:8px 15px;border-radius:20px;border:1px solid #ddd}
     </style>
 </head>
 <body>
     <h1>📊 Dashboard Docente</h1>
     <div class="stats">
-        <div class="card"><h3 id="total">0</h3><p>Risposte totali</p></div>
-        <div class="card"><h3 id="correct">0</h3><p>Corrette</p></div>
-        <div class="card"><h3 id="wrong">0</h3><p>Sbagliate</p></div>
-        <div class="card"><h3 id="students">0</h3><p>Studenti attivi</p></div>
+        <div class="card"><h3 id="total">0</h3><p>Eventi totali</p></div>
+        <div class="card"><h3 id="correct">0</h3><p>Risposte corrette</p></div>
+        <div class="card"><h3 id="wrong">0</h3><p>Risposte errate</p></div>
+        <div class="card"><h3 id="completed">0</h3><p>Partite completate 🎉</p></div>
+        <div class="card"><h3 id="students">0</h3><p>Squadre attive</p></div>
     </div>
+    
+    <div class="filter">
+        <label>Filtra: </label>
+        <select id="filterType" onchange="applyFilter()">
+            <option value="all">Tutti gli eventi</option>
+            <option value="completato">Solo completamenti 🎉</option>
+            <option value="risposta_corretta">Solo risposte corrette ✅</option>
+            <option value="risposta_sbagliata">Solo errori ❌</option>
+        </select>
+    </div>
+    
     <button class="btn-clear" onclick="clearAll()">🗑️ Svuota tutto</button>
+    
     <div id="table-container">
         <table id="results">
-            <thead><tr><th>Studente</th><th>Domanda</th><th>Risposta data</th><th>Esito</th><th>Ora</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Squadra</th>
+                    <th>Domanda / Evento</th>
+                    <th>Risposta</th>
+                    <th>Esito</th>
+                    <th>Ora</th>
+                </tr>
+            </thead>
             <tbody id="tbody"></tbody>
         </table>
-        <div id="empty-msg" class="empty">Nessuna risposta ancora. I dati appariranno qui in tempo reale...</div>
+        <div id="empty-msg" class="empty">Nessun evento ancora. I dati appariranno qui in tempo reale...<br><small>Assicurati che gli studenti stiano giocando!</small></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script>
-        // 📌 STESSO URL DI PRIMA!
+        // ✅ URL CORRETTO - STESSO DELL'APP STUDENTI!
         const firebaseConfig = {
             databaseURL: "https://caccia-al-tesoro-a9466-default-rtdb.europe-west1.firebasedatabase.app"
         };
@@ -51,40 +75,135 @@
 
         const tbody = document.getElementById('tbody');
         const emptyMsg = document.getElementById('empty-msg');
-        let total=0, correct=0, wrong=0, students=new Set();
+        let events = [], students = new Set(), completedCount = 0, correctCount = 0, wrongCount = 0;
 
+        // ✅ ASCOLTA IL PERCORSO GIUSTO: 'risposte'
         db.ref('risposte').on('child_added', snap => {
-            const d = snap.val();
-            if(!d) return;
-            emptyMsg.style.display='none';
-            total++; correct += d.esito?1:0; wrong += d.esito?0:1;
-            students.add(d.studente);
+            const e = snap.val();
+            if(!e) return;
+            
+            emptyMsg.style.display = 'none';
+            students.add(e.studente);
+            
+            // Conta per statistiche
+            if(e.tipo === 'completato') {
+                completedCount++;
+            } else if(e.esito === true) {
+                correctCount++;
+            } else if(e.esito === false) {
+                wrongCount++;
+            }
+            
             updateStats();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${d.studente}</td>
-                <td>${d.domanda}</td>
-                <td>${d.risposta}</td>
-                <td class="${d.esito?'ok':'no'}">${d.esito?'✅ Corretta':'❌ Errata'}</td>
-                <td>${new Date(d.ora).toLocaleTimeString()}</td>
-            `;
-            tbody.insertBefore(row, tbody.firstChild);
+            renderEvent(e);
         });
 
+        function renderEvent(e){
+            events.unshift({...e, id: Date.now()});
+            const row = document.createElement('tr');
+            
+            // Evidenzia i completamenti
+            if(e.tipo === 'completato') {
+                row.classList.add('completed');
+            }
+            
+            // Icona e testo esito
+            let esitoIcon = '', esitoText = '';
+            if(e.tipo === 'completato') {
+                esitoIcon = '🎉';
+                esitoText = 'PARTITA COMPLETATA!';
+            } else if(e.esito === true) {
+                esitoIcon = '✅';
+                esitoText = 'Corretta';
+            } else if(e.esito === false) {
+                esitoIcon = '❌';
+                esitoText = 'Errata';
+            } else {
+                esitoIcon = '📝';
+                esitoText = '-';
+            }
+            
+            // Formatta data/ora
+            const date = new Date(e.ora);
+            const timeStr = date.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+            const dateStr = date.toLocaleDateString('it-IT');
+            
+            row.innerHTML = `
+                <td><strong>${e.studente || 'Anonimo'}</strong></td>
+                <td>${e.domanda || '-'}</td>
+                <td>${e.risposta ? `<em>"${e.risposta}"</em>` : '-'}</td>
+                <td class="${e.esito || e.tipo==='completato' ? 'ok' : 'no'}">${esitoIcon} ${esitoText}</td>
+                <td>${timeStr}<br><small style="color:#888">${dateStr}</small></td>
+            `;
+            
+            tbody.insertBefore(row, tbody.firstChild);
+        }
+
+        function applyFilter(){
+            const filter = document.getElementById('filterType').value;
+            tbody.innerHTML = '';
+            
+            const filtered = filter === 'all' ? events : 
+                           filter === 'completato' ? events.filter(e => e.tipo === 'completato') :
+                           filter === 'risposta_corretta' ? events.filter(e => e.esito === true && e.tipo !== 'completato') :
+                           events.filter(e => e.esito === false);
+            
+            if(filtered.length === 0){
+                emptyMsg.style.display = 'block';
+                emptyMsg.textContent = 'Nessun evento con questo filtro.';
+                return;
+            }
+            emptyMsg.style.display = 'none';
+            
+            filtered.forEach(e => {
+                const row = document.createElement('tr');
+                if(e.tipo === 'completato') row.classList.add('completed');
+                
+                let esitoIcon = '', esitoText = '';
+                if(e.tipo === 'completato') {
+                    esitoIcon = '🎉';
+                    esitoText = 'PARTITA COMPLETATA!';
+                } else if(e.esito === true) {
+                    esitoIcon = '✅';
+                    esitoText = 'Corretta';
+                } else if(e.esito === false) {
+                    esitoIcon = '❌';
+                    esitoText = 'Errata';
+                }
+                
+                const date = new Date(e.ora);
+                const timeStr = date.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+                const dateStr = date.toLocaleDateString('it-IT');
+                
+                row.innerHTML = `
+                    <td><strong>${e.studente || 'Anonimo'}</strong></td>
+                    <td>${e.domanda || '-'}</td>
+                    <td>${e.risposta ? `<em>"${e.risposta}"</em>` : '-'}</td>
+                    <td class="${e.esito || e.tipo==='completato' ? 'ok' : 'no'}">${esitoIcon} ${esitoText}</td>
+                    <td>${timeStr}<br><small style="color:#888">${dateStr}</small></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
         function updateStats(){
-            document.getElementById('total').textContent=total;
-            document.getElementById('correct').textContent=correct;
-            document.getElementById('wrong').textContent=wrong;
-            document.getElementById('students').textContent=students.size;
+            document.getElementById('total').textContent = events.length;
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('wrong').textContent = wrongCount;
+            document.getElementById('completed').textContent = completedCount;
+            document.getElementById('students').textContent = students.size;
         }
 
         function clearAll(){
-            if(confirm('Vuoi davvero cancellare tutte le risposte?')){
+            if(confirm('⚠️ Vuoi davvero cancellare TUTTI i dati?')){
                 db.ref('risposte').remove();
-                tbody.innerHTML='';
-                total=0;correct=0;wrong=0;students.clear();
+                tbody.innerHTML = '';
+                events = [];
+                correctCount = 0; wrongCount = 0; completedCount = 0;
+                students.clear();
                 updateStats();
-                emptyMsg.style.display='block';
+                emptyMsg.style.display = 'block';
+                emptyMsg.textContent = 'Dati svuotati. In attesa di nuove partite...';
             }
         }
     </script>
