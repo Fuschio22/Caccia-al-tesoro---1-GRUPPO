@@ -3,367 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz - Risultati Partita</title>
+    <title>Dashboard Docente - Caccia al Tesoro</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .quiz-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .btn-svuota {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 25px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-bottom: 20px;
-        }
-
-        .btn-svuota:hover {
-            background-color: #c0392b;
-            transform: translateY(-1px);
-        }
-
-        .table-wrapper {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: #1a2b5a;
-        }
-
-        thead th {
-            color: white;
-            padding: 18px 20px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        thead th:first-child {
-            padding-left: 30px;
-        }
-
-        thead th:last-child {
-            padding-right: 30px;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #eef0f3;
-            transition: background-color 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background-color: #f8f9fb;
-        }
-
-        tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        td {
-            padding: 16px 20px;
-            font-size: 15px;
-            line-height: 1.6;
-            vertical-align: top;
-        }
-
-        td:first-child {
-            padding-left: 30px;
-        }
-
-        td:last-child {
-            padding-right: 30px;
-        }
-
-        .col-squadra {
-            font-weight: 700;
-            color: #333;
-            white-space: nowrap;
-            min-width: 120px;
-        }
-
-        .col-domanda {
-            color: #444;
-            min-width: 300px;
-        }
-
-        .col-risposta {
-            min-width: 250px;
-            font-size: 15px;
-            font-style: normal;
-            font-family: inherit;
-            font-weight: 500;
-            color: #444;
-        }
-
-        .col-esito {
-            white-space: nowrap;
-            min-width: 180px;
-            font-weight: 700;
-        }
-
-        .col-ora {
-            white-space: nowrap;
-            text-align: right;
-            min-width: 120px;
-            font-size: 14px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .col-ora .ora-data {
-            display: block;
-            font-size: 13px;
-            color: #999;
-            font-weight: 400;
-            margin-top: 2px;
-        }
-
-        .row-completata {
-            background-color: #e8f5e9 !important;
-        }
-
-        .row-completata .col-squadra {
-            color: #2e7d32;
-        }
-
-        .row-completata .col-domanda {
-            color: #2e7d32;
-            font-weight: 700;
-        }
-
-        .esito-corretta {
-            color: #2e7d32;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .check-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            background-color: #4caf50;
-            border-radius: 4px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .esito-errata {
-            color: #c62828;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .x-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            background-color: #e53935;
-            border-radius: 4px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .esito-completata {
-            color: #2e7d32;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .row-errata {
-            background-color: #fef0f0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            thead th,
-            td {
-                padding: 12px 10px;
-                font-size: 13px;
-            }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#1a2a6c,#2c3e50);margin:0;padding:20px;color:#333;min-height:100vh}
+        .container{max-width:1200px;margin:0 auto}
+        h1{text-align:center;font-size:1.9em;margin:0 0 30px 0;display:flex;align-items:center;justify-content:center;gap:10px;color:white;text-shadow:0 2px 4px rgba(0,0,0,0.3)}
+        h1::before{content:"🎨";font-size:1.2em}
+        
+        .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-bottom:25px}
+        .stat-card{background:rgba(255,255,255,0.95);padding:20px;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.2);text-align:center;transition:transform 0.2s}
+        .stat-card:hover{transform:translateY(-3px)}
+        .stat-card h3{margin:0;font-size:2.2em;color:#2e7d32;font-weight:700}
+        .stat-card p{margin:8px 0 0;color:#555;font-size:0.9em;font-weight:500}
+        
+        .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+        .btn-clear{background:linear-gradient(45deg,#e53935,#c62828);color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:600;font-size:0.95em;transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+        .btn-clear:hover{background:linear-gradient(45deg,#c62828,#b71c1c);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+        .btn-clear:disabled{background:#ccc;cursor:not-allowed;transform:none}
+        .btn-live{background:linear-gradient(45deg,#2196f3,#0d47a1);color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:600;font-size:0.95em;transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+        .btn-live:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+        .btn-live.active{background:linear-gradient(45deg,#4caf50,#2e7d32);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.4)}50%{box-shadow:0 0 0 10px rgba(76,175,80,0)}}
+        
+        .table-container{background:rgba(255,255,255,0.95);border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.2);overflow:hidden}
+        table{width:100%;border-collapse:collapse}
+        th{background:linear-gradient(90deg,#1a237e,#2e7d32);color:white;padding:16px 12px;text-align:left;font-weight:600;font-size:0.95em}
+        td{padding:12px 12px;border-bottom:1px solid #f0f0f0;font-size:0.9em}
+        tr:hover td{background:#f8fafc}
+        tr.completed{background:linear-gradient(90deg,rgba(76,175,80,0.1),transparent);border-left:4px solid #4caf50}
+        
+        .correct{color:#2e7d32;font-weight:600;display:flex;align-items:center;gap:4px}
+        .wrong{color:#c62828;font-weight:600;display:flex;align-items:center;gap:4px}
+        .start{color:#1976d2;font-weight:600;font-style:italic}
+        .completed-badge{background:linear-gradient(45deg,#4caf50,#2e7d32);color:white;padding:3px 10px;border-radius:12px;font-size:0.85em;font-weight:600}
+        
+        .answer-cell{background:#f5f5f5;padding:6px 12px;border-radius:8px;display:inline-block;font-family:'Georgia',serif;font-size:0.95em;color:#222;font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .question-cell{max-width:250px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#37474f}
+        
+        .empty-state{text-align:center;padding:60px 20px;color:#78909c;font-style:italic;font-size:1.1em}
+        .empty-state::before{content:"📭";display:block;font-size:3em;margin-bottom:15px}
+        
+        .status-bar{background:rgba(255,255,255,0.9);padding:10px 20px;border-radius:12px;margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+        .status-dot{width:10px;height:10px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:6px;animation:blink 1.5s infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+        .status-text{font-size:0.9em;color:#555}
+        
+        .filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:15px}
+        .filter-btn{background:#e3f2fd;color:#1976d2;border:2px solid #2196f3;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:0.85em;font-weight:500;transition:all 0.2s}
+        .filter-btn:hover,.filter-btn.active{background:#2196f3;color:white}
+        
+        @media(max-width:768px){
+            .stats{grid-template-columns:repeat(2,1fr)}
+            th,td{padding:10px 8px;font-size:0.85em}
+            .answer-cell,.question-cell{max-width:120px}
+            h1{font-size:1.5em}
         }
     </style>
 </head>
 <body>
-
-<div class="quiz-container">
-    <button class="btn-svuota" onclick="svuotaTutto()">
-        <span>🗑</span> Svuota tutto
-    </button>
-
-    <div class="table-wrapper">
-        <table id="quizTable">
-            <thead>
-                <tr>
-                    <th>Squadra</th>
-                    <th>Domanda / Evento</th>
-                    <th>Risposta</th>
-                    <th>Esito</th>
-                    <th>Ora</th>
-                </tr>
-            </thead>
-            <tbody id="quizBody">
-            </tbody>
-        </table>
+    <div class="container">
+        <h1>Dashboard Docente - Caccia al Tesoro</h1>
+        
+        <div class="status-bar">
+            <div><span class="status-dot"></span><span class="status-text" id="connectionStatus">Connessione attiva</span></div>
+            <div class="status-text" id="lastUpdate">Ultimo aggiornamento: --:--:--</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card"><h3 id="totalAnswers">0</h3><p>Risposte totali</p></div>
+            <div class="stat-card"><h3 id="correctAnswers">0</h3><p>✅ Corrette</p></div>
+            <div class="stat-card"><h3 id="wrongAnswers">0</h3><p>❌ Errate</p></div>
+            <div class="stat-card"><h3 id="activeStudents">0</h3><p>Squadre attive</p></div>
+            <div class="stat-card"><h3 id="completedGames">0</h3><p>🎉 Completati</p></div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-clear" id="clearBtn" onclick="clearData()">🗑️ Svuota tutto</button>
+            <button class="btn-live" id="liveBtn" onclick="toggleLive()">🔴 Live: ON</button>
+        </div>
+        
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterData('all',this)">Tutti</button>
+            <button class="filter-btn" onclick="filterData('corrette',this)">✅ Corrette</button>
+            <button class="filter-btn" onclick="filterData('errate',this)">❌ Errate</button>
+            <button class="filter-btn" onclick="filterData('completati',this)">🎉 Completati</button>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="min-width:140px">Squadra</th>
+                        <th>Domanda / Evento</th>
+                        <th>Risposta</th>
+                        <th style="min-width:100px">Esito</th>
+                        <th style="min-width:90px">Ora</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="5" class="empty-state">In attesa di dati dalle squadre...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-<script>
-    const quizData = [
-        {
-            squadra: "dakjkhcd",
-            domanda: "🎉 PARTITA COMPLETATA",
-            risposta: "Tutte le domande risposte correttamente",
-            esito: "completata",
-            completata: true
-        },
-        {
-            squadra: "dakjkhcd",
-            domanda: "Terza domanda: Tra i personaggi seduti al banco, uno sembra rispondere alla chiamata: di chi si tratta?",
-            risposta: "matteo",
-            esito: "corretta"
-        },
-        {
-            squadra: "dakjkhcd",
-            domanda: "Seconda domanda: Chi è il personaggio sulla destra che sta indicando qualcosa?",
-            risposta: "gesù",
-            esito: "corretta"
-        },
-        {
-            squadra: "dakjkhcd",
-            domanda: "Prima domanda: Sulla destra è presente una finestra, ma la luce sembra arrivare da un altro luogo. Secondo te, cosa rappresenta quella luce?",
-            risposta: "luce di dio",
-            esito: "corretta"
-        },
-        {
-            squadra: "dakjkhcd",
-            domanda: "Prima domanda: Sulla destra è presente una finestra, ma la luce sembra arrivare da un altro luogo. Secondo te, cosa rappresenta quella luce?",
-            risposta: "luce divi",
-            esito: "errata"
-        },
-        {
-            squadra: "dakjkhcd",
-            domanda: "Seconda domanda: Probabilmente, chi è il volto sulla pelle?",
-            risposta: "michelangelo",
-            esito: "corretta"
-        },
-        {
-            squadra: "dakjkhcd",
-            domanda: "Prima domanda: Osserva attentamente l'immagine sulla Lim e leggi il racconto. Chi è l'uomo con una pelle sulla mano sinistra?",
-            risposta: "bartolomeo",
-            esito: "corretta"
+    <script>
+        // ⚙️ CONFIGURAZIONE FIREBASE - Sostituisci con il TUO progetto
+        const firebaseConfig = {
+            databaseURL: "https://caccia-al-tesoro-a9466-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+        
+        // Inizializza Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-    ];
-
-    const now = new Date();
-    const oraFormatted = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    const dataFormatted = now.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-    function renderTable() {
-        const tbody = document.getElementById('quizBody');
-        tbody.innerHTML = '';
-
-        quizData.forEach((item) => {
-            const tr = document.createElement('tr');
-
-            if (item.completata) {
-                tr.classList.add('row-completata');
-            } else if (item.esito === 'errata') {
-                tr.classList.add('row-errata');
+        const db = firebase.database();
+        const risposteRef = db.ref('risposte');
+        
+        // Stato globale
+        let liveMode = true;
+        let currentFilter = 'all';
+        let allData = [];
+        
+        // 🔧 Funzioni utility
+        function formatTime(timestamp) {
+            if (!timestamp) return '--:--';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        }
+        
+        function truncate(text, maxLen = 40) {
+            if (!text) return '-';
+            return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+        }
+        
+        function pulisciRisposta(t) { 
+            return t && t !== '-' ? t.replace(/["'()\[\]{}]/g, '').trim() : '-'; 
+        }
+        
+        // 📊 Aggiorna statistiche
+        function updateStats(data) {
+            const correct = data.filter(d => d.esito === true && d.tipo !== 'completato').length;
+            const wrong = data.filter(d => d.esito === false).length;
+            const completed = data.filter(d => d.tipo === 'completato').length;
+            const teams = new Set(data.filter(d => d.tipo !== 'completato').map(d => d.studente));
+            
+            document.getElementById('totalAnswers').textContent = correct + wrong;
+            document.getElementById('correctAnswers').textContent = correct;
+            document.getElementById('wrongAnswers').textContent = wrong;
+            document.getElementById('activeStudents').textContent = teams.size;
+            document.getElementById('completedGames').textContent = completed;
+        }
+        
+        // 🎨 Renderizza tabella
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Nessun dato disponibile</td></tr>';
+                return;
             }
-
-            const tdSquadra = document.createElement('td');
-            tdSquadra.className = 'col-squadra';
-            tdSquadra.textContent = item.squadra;
-            tr.appendChild(tdSquadra);
-
-            const tdDomanda = document.createElement('td');
-            tdDomanda.className = 'col-domanda';
-            tdDomanda.textContent = item.domanda;
-            tr.appendChild(tdDomanda);
-
-            const tdRisposta = document.createElement('td');
-            tdRisposta.className = 'col-risposta';
-            tdRisposta.textContent = item.risposta;
-            tr.appendChild(tdRisposta);
-
-            const tdEsito = document.createElement('td');
-            tdEsito.className = 'col-esito';
-
-            if (item.completata) {
-                tdEsito.innerHTML = `<span class="esito-completata"><span>🎉</span>PARTITA COMPLETATA!</span>`;
-            } else if (item.esito === 'corretta') {
-                tdEsito.innerHTML = `<span class="esito-corretta"><span class="check-icon">✓</span>Corretta</span>`;
-            } else if (item.esito === 'errata') {
-                tdEsito.innerHTML = `<span class="esito-errata"><span class="x-icon">✕</span>Errata</span>`;
+            
+            // Ordina per timestamp decrescente (più recenti prima)
+            const sorted = [...data].sort((a, b) => (b.ora || 0) - (a.ora || 0));
+            
+            tbody.innerHTML = sorted.map(d => {
+                // Gestione evento "completato"
+                if (d.tipo === 'completato') {
+                    return `<tr class="completed">
+                        <td><strong>🏆 ${d.studente || 'Anonimo'}</strong></td>
+                        <td><span class="completed-badge">🎉 PARTITA COMPLETATA</span></td>
+                        <td><span class="answer-cell">Tutte le domande risposte!</span></td>
+                        <td><span class="correct">✅ VITTORIA</span></td>
+                        <td>${formatTime(d.ora)}</td>
+                    </tr>`;
+                }
+                
+                // Gestione risposte normali
+                const esitoClass = d.esito ? 'correct' : 'wrong';
+                const esitoIcon = d.esito ? '✅' : '❌';
+                const esitoText = d.esito ? 'Corretta' : 'Errata';
+                
+                return `<tr>
+                    <td><strong>${d.studente || 'Anonimo'}</strong></td>
+                    <td class="question-cell" title="${d.domanda || ''}">${truncate(d.domanda, 50)}</td>
+                    <td><span class="answer-cell" title="${d.risposta || ''}">${pulisciRisposta(d.risposta)}</span></td>
+                    <td><span class="${esitoClass}">${esitoIcon} ${esitoText}</span></td>
+                    <td>${formatTime(d.ora)}</td>
+                </tr>`;
+            }).join('');
+        }
+        
+        // 🔍 Filtra dati
+        function filterData(filter, btn) {
+            currentFilter = filter;
+            
+            // Aggiorna bottoni
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            
+            applyFilter();
+        }
+        
+        function applyFilter() {
+            let filtered = [...allData];
+            
+            if (currentFilter === 'corrette') {
+                filtered = filtered.filter(d => d.esito === true && d.tipo !== 'completato');
+            } else if (currentFilter === 'errate') {
+                filtered = filtered.filter(d => d.esito === false);
+            } else if (currentFilter === 'completati') {
+                filtered = filtered.filter(d => d.tipo === 'completato');
             }
-
-            tr.appendChild(tdEsito);
-
-            const tdOra = document.createElement('td');
-            tdOra.className = 'col-ora';
-            tdOra.innerHTML = `${oraFormatted}<span class="ora-data">${dataFormatted}</span>`;
-            tr.appendChild(tdOra);
-
-            tbody.appendChild(tr);
+            // 'all' mostra tutto
+            
+            renderTable(filtered);
+            updateStats(allData); // Stats sempre su tutti i dati
+        }
+        
+        // 🔄 Toggle live mode
+        function toggleLive() {
+            liveMode = !liveMode;
+            const btn = document.getElementById('liveBtn');
+            const status = document.getElementById('connectionStatus');
+            
+            if (liveMode) {
+                btn.innerHTML = '🔴 Live: ON';
+                btn.classList.add('active');
+                status.innerHTML = '<span class="status-dot"></span>Connessione attiva';
+                // Riattiva listener
+                attachListener();
+            } else {
+                btn.innerHTML = '⏸️ Live: OFF';
+                btn.classList.remove('active');
+                status.textContent = '⏸️ Aggiornamenti in pausa';
+                // Disattiva listener
+                risposteRef.off();
+            }
+        }
+        
+        // 🗑️ Elimina tutti i dati
+        function clearData() {
+            if (!confirm("⚠️ SEI SICURO di voler eliminare TUTTI i dati delle partite?\n\nQuesta azione è IRREVERSIBILE.")) {
+                return;
+            }
+            
+            const btn = document.getElementById('clearBtn');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Elimino...';
+            
+            risposteRef.remove()
+                .then(() => {
+                    console.log("✅ Dati eliminati con successo");
+                    allData = [];
+                    renderTable([]);
+                    updateStats([]);
+                })
+                .catch(error => {
+                    console.error("❌ Errore Firebase:", error);
+                    alert("Errore durante l'eliminazione: " + error.message);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+        }
+        
+        // 📡 Listener Firebase principale
+        function attachListener() {
+            risposteRef.on('value', snap => {
+                if (!liveMode) return;
+                
+                const data = snap.val();
+                const tbody = document.getElementById('tableBody');
+                
+                // Aggiorna timestamp
+                document.getElementById('lastUpdate').textContent = 
+                    `Ultimo aggiornamento: ${new Date().toLocaleTimeString('it-IT')}`;
+                
+                // Nessun dato
+                if (!data) {
+                    allData = [];
+                    renderTable([]);
+                    updateStats([]);
+                    return;
+                }
+                
+                // Converti oggetto in array
+                allData = Object.values(data);
+                
+                // Applica filtro corrente
+                applyFilter();
+                
+                console.log(`📊 Dati sincronizzati: ${allData.length} eventi`);
+            }, error => {
+                console.error("❌ Errore di connessione:", error);
+                document.getElementById('connectionStatus').innerHTML = 
+                    '<span style="background:#ef5350;width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px"></span>Errore connessione';
+            });
+        }
+        
+        // 🎯 Inizializzazione
+        document.addEventListener('DOMContentLoaded', () => {
+            attachListener();
+            
+            // Auto-scroll per nuovi dati (opzionale)
+            const observer = new MutationObserver(mutations => {
+                const tbody = document.getElementById('tableBody');
+                if (mutations.length > 0 && tbody.children.length > 0) {
+                    // Evidenzia nuova riga
+                    const firstRow = tbody.querySelector('tr');
+                    if (firstRow) {
+                        firstRow.style.transition = 'background 0.3s';
+                        firstRow.style.background = '#e8f5e9';
+                        setTimeout(() => {
+                            firstRow.style.background = '';
+                        }, 1500);
+                    }
+                }
+            });
+            
+            observer.observe(document.getElementById('tableBody'), { childList: true });
         });
-    }
-
-    function svuotaTutto() {
-        if (confirm('Sei sicuro di voler svuotare tutti i risultati?')) {
-            quizData.length = 0;
-            renderTable();
-        }
-    }
-
-    renderTable();
-</script>
-
+        
+        // 🧹 Cleanup
+        window.addEventListener('beforeunload', () => {
+            risposteRef.off();
+        });
+    </script>
 </body>
 </html>
