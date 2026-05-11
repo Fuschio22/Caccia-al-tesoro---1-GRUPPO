@@ -5,244 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Docente</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .filter-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .filter-container select {
-            padding: 10px 40px 10px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 14px;
-        }
-
-        .btn-svuota {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 25px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .test-panel {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-        }
-
-        .test-panel h3 {
-            margin-bottom: 16px;
-            color: #1a2b5a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .input-group input, .input-group select {
-            padding: 10px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #45a049;
-        }
-
-        .table-wrapper {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: #1a2b5a;
-        }
-
-        thead th {
-            color: white;
-            padding: 16px 20px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #eef0f3;
-        }
-
-        tbody tr:hover {
-            background-color: #f8f9fb;
-        }
-
-        td {
-            padding: 16px 20px;
-            font-size: 15px;
-        }
-
-        .col-squadra {
-            font-weight: 700;
-            width: 15%;
-        }
-
-        .col-domanda {
-            width: 35%;
-        }
-
-        .col-risposta {
-            width: 20%;
-            font-style: normal;
-            font-family: inherit;
-        }
-
-        .col-esito {
-            width: 15%;
-            font-weight: 700;
-        }
-
-        .col-ora {
-            width: 15%;
-            font-size: 14px;
-        }
-
-        .ora-data {
-            display: block;
-            font-size: 13px;
-            color: #999;
-            margin-top: 2px;
-        }
-
-        .row-inizio {
-            background-color: #e3f2fd !important;
-        }
-
-        .row-inizio .col-domanda {
-            color: #1565c0;
-            font-weight: 700;
-        }
-
-        .row-completata {
-            background-color: #e8f5e9 !important;
-        }
-
-        .row-completata .col-domanda {
-            color: #2e7d32;
-            font-weight: 700;
-        }
-
-        .esito-corretta {
-            color: #2e7d32;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .check-icon {
-            width: 22px;
-            height: 22px;
-            background-color: #4caf50;
-            border-radius: 4px;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
-        .esito-errata {
-            color: #c62828;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .x-icon {
-            width: 22px;
-            height: 22px;
-            background-color: #e53935;
-            border-radius: 4px;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
-        .emoji {
-            margin-right: 6px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 24px; border-radius: 12px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .stat-number { font-size: 36px; font-weight: 700; color: #2e7d32; margin-bottom: 8px; }
+        .stat-label { font-size: 14px; color: #666; }
+        
+        .filter-container { text-align: center; margin-bottom: 24px; }
+        .filter-container select { padding: 10px 20px; border-radius: 25px; border: 2px solid #e0e0e0; font-size: 14px; }
+        
+        .btn-svuota { background: #e74c3c; color: white; border: none; padding: 12px 28px; border-radius: 25px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
+        
+        .test-panel { background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .test-panel h3 { margin-bottom: 16px; color: #1a2b5a; }
+        .input-group { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .input-group input, .input-group select { padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; flex: 1; min-width: 150px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-right: 10px; }
+        .btn-primary { background: #4caf50; color: white; }
+        .btn:hover { opacity: 0.9; }
+        
+        .table-wrapper { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #1a2b5a; }
+        thead th { color: white; padding: 16px 20px; text-align: left; font-size: 15px; font-weight: 700; }
+        tbody tr { border-bottom: 1px solid #eef0f3; }
+        tbody tr:hover { background: #f8f9fb; }
+        td { padding: 16px 20px; font-size: 15px; }
+        
+        .row-inizio { background: #e3f2fd !important; }
+        .row-inizio .domanda { color: #1565c0; font-weight: 700; }
+        .row-completata { background: #e8f5e9 !important; }
+        .row-completata .domanda { color: #2e7d32; font-weight: 700; }
+        .row-errata { background: #fef0f0; }
+        
+        .corretta { color: #2e7d32; font-weight: 700; }
+        .errata { color: #c62828; font-weight: 700; }
+        .check { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: #4caf50; border-radius: 4px; color: white; margin-right: 6px; font-size: 14px; }
+        .x { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: #e53935; border-radius: 4px; color: white; margin-right: 6px; font-size: 14px; }
+        .ora-data { display: block; font-size: 13px; color: #999; margin-top: 2px; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="stats">
+        <div class="stat-card"><div class="stat-number" id="stat1">0</div><div class="stat-label">Eventi totali</div></div>
+        <div class="stat-card"><div class="stat-number" id="stat2">0</div><div class="stat-label">Risposte corrette</div></div>
+        <div class="stat-card"><div class="stat-number" id="stat3">0</div><div class="stat-label">Risposte errate</div></div>
+        <div class="stat-card"><div class="stat-number" id="stat4">0</div><div class="stat-label">Partite completate 🎉</div></div>
+        <div class="stat-card"><div class="stat-number" id="stat5">0</div><div class="stat-label">Squadre attive</div></div>
+    </div>
+
     <div class="filter-container">
-        <label>Filtra:</label>
+        <label>Filtra: </label>
         <select id="filtro" onchange="renderTable()">
             <option value="tutti">Tutti gli eventi</option>
             <option value="inizio">Inizi partita</option>
@@ -255,253 +73,201 @@
     <button class="btn-svuota" onclick="svuotaTutto()">🗑 Svuota tutto</button>
 
     <div class="test-panel">
-        <h3>🧪 Simula Ricezione Dati (per test)</h3>
+        <h3>🧪 Simula Ricezione Dati</h3>
         <div class="input-group">
-            <input type="text" id="testSquadra" placeholder="Nome squadra" value="Squadra1">
-            <input type="text" id="testDomanda" placeholder="Domanda" value="In quale città siamo?">
-            <input type="text" id="testRisposta" placeholder="Risposta" value="venezia">
-            <select id="testEsito">
+            <input type="text" id="squadra" placeholder="Squadra" value="Squadra1">
+            <input type="text" id="domanda" placeholder="Domanda" value="In quale città siamo?">
+            <input type="text" id="risposta" placeholder="Risposta" value="venezia">
+            <select id="esito">
                 <option value="corretta">Corretta</option>
                 <option value="errata">Errata</option>
             </select>
         </div>
-        <div class="btn-group">
-            <button class="btn btn-primary" onclick="inizioPartita()">🎮 Inizio Partita</button>
-            <button class="btn btn-primary" onclick="nuovaRisposta()">📝 Nuova Risposta</button>
-            <button class="btn btn-primary" onclick="partitaCompletata()">🎉 Partita Completata</button>
-        </div>
+        <button class="btn btn-primary" onclick="inizio()">🎮 Inizio Partita</button>
+        <button class="btn btn-primary" onclick="risposta()">📝 Nuova Risposta</button>
+        <button class="btn btn-primary" onclick="completata()">🎉 Partita Completata</button>
     </div>
 
     <div class="table-wrapper">
         <table>
             <thead>
-                <tr>
-                    <th>Squadra</th>
-                    <th>Domanda / Evento</th>
-                    <th>Risposta</th>
-                    <th>Esito</th>
-                    <th>Ora</th>
-                </tr>
+                <tr><th>Squadra</th><th>Domanda / Evento</th><th>Risposta</th><th>Esito</th><th>Ora</th></tr>
             </thead>
-            <tbody id="quizBody">
-            </tbody>
+            <tbody id="tbody"></tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // Carica dati da localStorage
-    let quizData = JSON.parse(localStorage.getItem('quizData')) || [];
+// DATI IN MEMORIA
+let dati = JSON.parse(localStorage.getItem('quizDati')) || [];
+console.log('Dati caricati:', dati);
 
-    // Salva dati
-    function salvaDati() {
-        localStorage.setItem('quizData', JSON.stringify(quizData));
-    }
+// SALVA DATI
+function salva() {
+    localStorage.setItem('quizDati', JSON.stringify(dati));
+    console.log('Dati salvati:', dati);
+}
 
-    // Inizio partita
-    function inizioPartita() {
-        const squadra = document.getElementById('testSquadra').value.trim();
-        if (!squadra) {
-            alert('Inserisci il nome della squadra!');
-            return;
-        }
+// INIZIO PARTITA
+function inizio() {
+    const sq = document.getElementById('squadra').value.trim();
+    if (!sq) { alert('Inserisci squadra!'); return; }
+    
+    dati.push({
+        tipo: 'inizio',
+        squadra: sq,
+        domanda: 'PARTITA INIZIATA',
+        risposta: '-',
+        esito: 'info',
+        ora: new Date().toISOString()
+    });
+    
+    salva();
+    renderTable();
+    console.log('✅ Inizio partita:', sq);
+}
 
-        // Verifica se ha già iniziato
-        const giaIniziato = quizData.some(item => 
-            item.squadra === squadra && item.tipo === 'inizio'
-        );
-
-        if (giaIniziato) {
-            alert('Questa squadra ha già iniziato la partita!');
-            return;
-        }
-
-        quizData.push({
+// NUOVA RISPOSTA
+function risposta() {
+    const sq = document.getElementById('squadra').value.trim();
+    const dom = document.getElementById('domanda').value.trim();
+    const ris = document.getElementById('risposta').value.trim();
+    const es = document.getElementById('esito').value;
+    
+    if (!sq || !dom || !ris) { alert('Compila tutto!'); return; }
+    
+    // Se non ha iniziato, inizia automaticamente
+    const haIniziato = dati.some(d => d.squadra === sq && d.tipo === 'inizio');
+    if (!haIniziato) {
+        dati.push({
             tipo: 'inizio',
-            squadra: squadra,
+            squadra: sq,
             domanda: 'PARTITA INIZIATA',
             risposta: '-',
             esito: 'info',
-            timestamp: new Date().toISOString()
+            ora: new Date().toISOString()
         });
-
-        salvaDati();
-        renderTable();
-        console.log('✅ Partita iniziata per:', squadra);
     }
-
-    // Nuova risposta
-    function nuovaRisposta() {
-        const squadra = document.getElementById('testSquadra').value.trim();
-        const domanda = document.getElementById('testDomanda').value.trim();
-        const risposta = document.getElementById('testRisposta').value.trim();
-        const esito = document.getElementById('testEsito').value;
-
-        if (!squadra || !domanda || !risposta) {
-            alert('Compila tutti i campi!');
-            return;
-        }
-
-        // Verifica se ha iniziato
-        const haIniziato = quizData.some(item => 
-            item.squadra === squadra && item.tipo === 'inizio'
-        );
-
-        if (!haIniziato) {
-            // Se non ha iniziato, registra automaticamente l'inizio
-            quizData.push({
-                tipo: 'inizio',
-                squadra: squadra,
-                domanda: 'PARTITA INIZIATA',
-                risposta: '-',
-                esito: 'info',
-                timestamp: new Date().toISOString()
-            });
-        }
-
-        quizData.push({
-            tipo: 'domanda',
-            squadra: squadra,
-            domanda: domanda,
-            risposta: risposta,  // SENZA VIRGOLETTE!
-            esito: esito,
-            timestamp: new Date().toISOString()
-        });
-
-        salvaDati();
-        renderTable();
-        console.log('✅ Risposta registrata:', risposta);
-    }
-
-    // Partita completata
-    function partitaCompletata() {
-        const squadra = document.getElementById('testSquadra').value.trim();
-        if (!squadra) {
-            alert('Inserisci il nome della squadra!');
-            return;
-        }
-
-        quizData.push({
-            tipo: 'completata',
-            squadra: squadra,
-            domanda: 'PARTITA COMPLETATA',
-            risposta: 'Tutte le domande risposte correttamente',
-            esito: 'completata',
-            timestamp: new Date().toISOString()
-        });
-
-        salvaDati();
-        renderTable();
-        console.log('✅ Partita completata da:', squadra);
-    }
-
-    // Render tabella
-    function renderTable() {
-        const tbody = document.getElementById('quizBody');
-        const filtro = document.getElementById('filtro').value;
-        tbody.innerHTML = '';
-
-        let dati = [...quizData];
-
-        // Applica filtro
-        if (filtro === 'inizio') {
-            dati = dati.filter(item => item.tipo === 'inizio');
-        } else if (filtro === 'corrette') {
-            dati = dati.filter(item => item.esito === 'corretta');
-        } else if (filtro === 'errate') {
-            dati = dati.filter(item => item.esito === 'errata');
-        } else if (filtro === 'completate') {
-            dati = dati.filter(item => item.tipo === 'completata');
-        }
-
-        // Ordina per data (più recente prima)
-        dati.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        dati.forEach(item => {
-            const tr = document.createElement('tr');
-
-            // Classe per colore riga
-            if (item.tipo === 'inizio') tr.classList.add('row-inizio');
-            else if (item.tipo === 'completata') tr.classList.add('row-completata');
-            else if (item.esito === 'errata') tr.classList.add('row-errata');
-
-            // Squadra
-            const tdSquadra = document.createElement('td');
-            tdSquadra.className = 'col-squadra';
-            tdSquadra.textContent = item.squadra;
-            tr.appendChild(tdSquadra);
-
-            // Domanda
-            const tdDomanda = document.createElement('td');
-            tdDomanda.className = 'col-domanda';
-            if (item.tipo === 'inizio') {
-                tdDomanda.innerHTML = '<span class="emoji">🎮</span>PARTITA INIZIATA';
-            } else if (item.tipo === 'completata') {
-                tdDomanda.innerHTML = '<span class="emoji">🎉</span>PARTITA COMPLETATA';
-            } else {
-                tdDomanda.textContent = item.domanda;
-            }
-            tr.appendChild(tdDomanda);
-
-            // Risposta - SENZA VIRGOLETTE, SENZA CORSIVO
-            const tdRisposta = document.createElement('td');
-            tdRisposta.className = 'col-risposta';
-            tdRisposta.style.fontStyle = 'normal';
-            tdRisposta.textContent = item.risposta;  // NIENTE virgolette!
-            tr.appendChild(tdRisposta);
-
-            // Esito
-            const tdEsito = document.createElement('td');
-            tdEsito.className = 'col-esito';
-
-            if (item.tipo === 'inizio') {
-                tdEsito.innerHTML = '<span style="color: #1565c0;">🔵 Info</span>';
-            } else if (item.tipo === 'completata') {
-                tdEsito.innerHTML = '<span style="color: #2e7d32;"><span class="emoji">🎉</span>PARTITA COMPLETATA!</span>';
-            } else if (item.esito === 'corretta') {
-                tdEsito.innerHTML = '<span class="esito-corretta"><span class="check-icon">✓</span>Corretta</span>';
-            } else if (item.esito === 'errata') {
-                tdEsito.innerHTML = '<span class="esito-errata"><span class="x-icon">✕</span>Errata</span>';
-            }
-            tr.appendChild(tdEsito);
-
-            // Ora
-            const data = new Date(item.timestamp);
-            const ora = data.toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'});
-            const dataStr = data.toLocaleDateString('it-IT', {day: '2-digit', month: '2-digit', year: 'numeric'});
-            
-            const tdOra = document.createElement('td');
-            tdOra.className = 'col-ora';
-            tdOra.innerHTML = `${ora}<span class="ora-data">${dataStr}</span>`;
-            tr.appendChild(tdOra);
-
-            tbody.appendChild(tr);
-        });
-
-        if (dati.length === 0) {
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
-            td.colSpan = 5;
-            td.style.textAlign = 'center';
-            td.style.padding = '40px';
-            td.style.color = '#999';
-            td.textContent = 'Nessun dato presente';
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-        }
-    }
-
-    // Svuota tutto
-    function svuotaTutto() {
-        if (confirm('Sei sicuro di voler cancellare tutti i dati?')) {
-            quizData = [];
-            salvaDati();
-            renderTable();
-        }
-    }
-
-    // Render iniziale
+    
+    dati.push({
+        tipo: 'domanda',
+        squadra: sq,
+        domanda: dom,
+        risposta: ris,  // SENZA VIRGOLETTE!
+        esito: es,
+        ora: new Date().toISOString()
+    });
+    
+    salva();
     renderTable();
+    console.log('✅ Risposta:', ris);
+}
+
+// PARTITA COMPLETATA
+function completata() {
+    const sq = document.getElementById('squadra').value.trim();
+    if (!sq) { alert('Inserisci squadra!'); return; }
+    
+    dati.push({
+        tipo: 'completata',
+        squadra: sq,
+        domanda: 'PARTITA COMPLETATA',
+        risposta: 'Tutte le domande risposte correttamente',
+        esito: 'completata',
+        ora: new Date().toISOString()
+    });
+    
+    salva();
+    renderTable();
+    console.log('✅ Completata:', sq);
+}
+
+// RENDER TABELLA
+function renderTable() {
+    const tbody = document.getElementById('tbody');
+    const filtro = document.getElementById('filtro').value;
+    tbody.innerHTML = '';
+    
+    console.log('Render table - filtro:', filtro, 'dati:', dati);
+    
+    let filtra = [...dati];
+    if (filtro === 'inizio') filtra = dati.filter(d => d.tipo === 'inizio');
+    else if (filtro === 'corrette') filtra = dati.filter(d => d.esito === 'corretta');
+    else if (filtro === 'errate') filtra = dati.filter(d => d.esito === 'errata');
+    else if (filtro === 'completate') filtra = dati.filter(d => d.tipo === 'completata');
+    
+    // Ordina per data
+    filtra.sort((a, b) => new Date(b.ora) - new Date(a.ora));
+    
+    if (filtra.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:#999">Nessun dato</td></tr>';
+        updateStats();
+        return;
+    }
+    
+    filtra.forEach(d => {
+        const tr = document.createElement('tr');
+        
+        if (d.tipo === 'inizio') tr.className = 'row-inizio';
+        else if (d.tipo === 'completata') tr.className = 'row-completata';
+        else if (d.esito === 'errata') tr.className = 'row-errata';
+        
+        const data = new Date(d.ora);
+        const ora = data.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+        const dataStr = data.toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', year:'numeric'});
+        
+        let domandaHtml = d.domanda;
+        if (d.tipo === 'inizio') domandaHtml = '🎮 PARTITA INIZIATA';
+        else if (d.tipo === 'completata') domandaHtml = '🎉 PARTITA COMPLETATA';
+        
+        let esitoHtml = '';
+        if (d.tipo === 'inizio') esitoHtml = '<span style="color:#1565c0">ℹ️ Info</span>';
+        else if (d.tipo === 'completata') esitoHtml = '<span style="color:#2e7d32">🎉 PARTITA COMPLETATA!</span>';
+        else if (d.esito === 'corretta') esitoHtml = '<span class="corretta"><span class="check">✓</span>Corretta</span>';
+        else if (d.esito === 'errata') esitoHtml = '<span class="errata"><span class="x">✕</span>Errata</span>';
+        
+        tr.innerHTML = `
+            <td style="font-weight:700">${d.squadra}</td>
+            <td class="domanda">${domandaHtml}</td>
+            <td style="font-style:normal">${d.risposta}</td>
+            <td>${esitoHtml}</td>
+            <td>${ora}<span class="ora-data">${dataStr}</span></td>
+        `;
+        
+        tbody.appendChild(tr);
+    });
+    
+    updateStats();
+}
+
+// UPDATE STATS
+function updateStats() {
+    const squadre = new Set(dati.map(d => d.squadra));
+    const corrette = dati.filter(d => d.esito === 'corretta').length;
+    const errate = dati.filter(d => d.esito === 'errata').length;
+    const completate = dati.filter(d => d.tipo === 'completata').length;
+    const eventi = dati.filter(d => d.tipo === 'domanda').length;
+    
+    document.getElementById('stat1').textContent = eventi;
+    document.getElementById('stat2').textContent = corrette;
+    document.getElementById('stat3').textContent = errate;
+    document.getElementById('stat4').textContent = completate;
+    document.getElementById('stat5').textContent = squadre.size;
+}
+
+// SVUOTA
+function svuotaTutto() {
+    if (confirm('Cancellare tutto?')) {
+        dati = [];
+        salva();
+        renderTable();
+    }
+}
+
+// INIZIALIZZAZIONE
+console.log('🚀 Dashboard avviata');
+renderTable();
 </script>
 
 </body>
